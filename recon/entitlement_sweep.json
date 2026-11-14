@@ -1,0 +1,967 @@
+{
+  "at": "2026-11-14T13:57:37.504917+00:00",
+  "scope": "GET only, no config/secret file access",
+  "sections": {
+    "server_authorization": {
+      "client_params": [
+        {
+          "param": "(none)",
+          "status": 200,
+          "bytes": 39312,
+          "locked": true,
+          "content": "",
+          "body_chars": 0
+        },
+        {
+          "param": "?preview=1",
+          "status": 200,
+          "bytes": 39350,
+          "locked": true,
+          "content": "",
+          "body_chars": 0
+        },
+        {
+          "param": "?unlocked=1",
+          "status": 200,
+          "bytes": 39352,
+          "locked": true,
+          "content": "",
+          "body_chars": 0
+        },
+        {
+          "param": "?vip=1",
+          "status": 200,
+          "bytes": 39342,
+          "locked": true,
+          "content": "",
+          "body_chars": 0
+        },
+        {
+          "param": "?isPreview=1",
+          "status": 200,
+          "bytes": 39354,
+          "locked": true,
+          "content": "",
+          "body_chars": 0
+        },
+        {
+          "param": "?force=1",
+          "status": 200,
+          "bytes": 39346,
+          "locked": true,
+          "content": "",
+          "body_chars": 0
+        },
+        {
+          "param": "?admin=1",
+          "status": 200,
+          "bytes": 39346,
+          "locked": true,
+          "content": "",
+          "body_chars": 0
+        },
+        {
+          "param": "?key=1",
+          "status": 200,
+          "bytes": 39342,
+          "locked": true,
+          "content": "",
+          "body_chars": 0
+        },
+        {
+          "param": "?chapterId=1",
+          "status": 200,
+          "bytes": 39354,
+          "locked": true,
+          "content": "",
+          "body_chars": 0
+        },
+        {
+          "param": "?content=full",
+          "status": 200,
+          "bytes": 39356,
+          "locked": true,
+          "content": "",
+          "body_chars": 0
+        }
+      ],
+      "privilege_headers": [
+        {
+          "header": "X-User-Role",
+          "status": 200,
+          "locked": true,
+          "content": "",
+          "body_chars": 0
+        },
+        {
+          "header": "X-VIP",
+          "status": 200,
+          "locked": true,
+          "content": "",
+          "body_chars": 0
+        },
+        {
+          "header": "X-Forwarded-User",
+          "status": 200,
+          "locked": true,
+          "content": "",
+          "body_chars": 0
+        },
+        {
+          "header": "X-Original-URL",
+          "status": 200,
+          "locked": true,
+          "content": "",
+          "body_chars": 0
+        },
+        {
+          "header": "X-Rewrite-URL",
+          "status": 200,
+          "locked": true,
+          "content": "",
+          "body_chars": 0
+        },
+        {
+          "header": "X-Middleware-Subrequest",
+          "status": 200,
+          "locked": true,
+          "content": "",
+          "body_chars": 0
+        }
+      ],
+      "cookie_variants": [
+        {
+          "label": "none",
+          "cookie": "none",
+          "status": 200,
+          "locked": true,
+          "content": "",
+          "body_chars": 0,
+          "body_sha": "3274c3dd0d"
+        },
+        {
+          "label": "fake_A",
+          "cookie": "fake",
+          "status": 200,
+          "locked": true,
+          "content": "",
+          "body_chars": 0,
+          "body_sha": "3274c3dd0d"
+        },
+        {
+          "label": "fake_B",
+          "cookie": "fake",
+          "status": 200,
+          "locked": true,
+          "content": "",
+          "body_chars": 0,
+          "body_sha": "3274c3dd0d"
+        }
+      ]
+    },
+    "content_delivery": {
+      "channels": [
+        {
+          "chapter": 1,
+          "label": "free",
+          "channel": "html",
+          "status": 200,
+          "content_type": "text/html; charset=utf-8",
+          "bytes": 127350,
+          "cache_control": "private, no-cache, no-store, max-age=0, must-revalidate, private, no-cache, no-store, max-age=0, must-revalidate",
+          "cf_cache_status": "DYNAMIC",
+          "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Accept-Encoding",
+          "locked": false,
+          "content_field": "$1b",
+          "body_chars": 38103,
+          "dom_prose_chars": 32943,
+          "text_chunks": [
+            [
+              "e",
+              1712
+            ],
+            [
+              "1b",
+              38109
+            ]
+          ],
+          "longest_string_chars": 278,
+          "has_audio_url": false
+        },
+        {
+          "chapter": 1,
+          "label": "free",
+          "channel": "rsc",
+          "status": 200,
+          "content_type": "text/x-component",
+          "bytes": 59720,
+          "cache_control": "private, no-cache, no-store, max-age=0, must-revalidate, private, no-cache, no-store, max-age=0, must-revalidate",
+          "cf_cache_status": "DYNAMIC",
+          "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Accept-Encoding",
+          "locked": false,
+          "content_field": "$15",
+          "body_chars": 38103,
+          "dom_prose_chars": 0,
+          "text_chunks": [
+            [
+              "a",
+              1711
+            ],
+            [
+              "15",
+              38109
+            ]
+          ],
+          "longest_string_chars": 278,
+          "has_audio_url": false
+        },
+        {
+          "chapter": 1,
+          "label": "free",
+          "channel": "prefetch",
+          "status": 200,
+          "content_type": "text/html; charset=utf-8",
+          "bytes": 127307,
+          "cache_control": "private, no-cache, no-store, max-age=0, must-revalidate, private, no-cache, no-store, max-age=0, must-revalidate",
+          "cf_cache_status": "DYNAMIC",
+          "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Accept-Encoding",
+          "locked": false,
+          "content_field": "$1b",
+          "body_chars": 38103,
+          "dom_prose_chars": 32943,
+          "text_chunks": [
+            [
+              "e",
+              1712
+            ],
+            [
+              "1b",
+              38109
+            ]
+          ],
+          "longest_string_chars": 278,
+          "has_audio_url": false
+        },
+        {
+          "chapter": 4,
+          "label": "locked",
+          "channel": "html",
+          "status": 200,
+          "content_type": "text/html; charset=utf-8",
+          "bytes": 39312,
+          "cache_control": "private, no-cache, no-store, max-age=0, must-revalidate, private, no-cache, no-store, max-age=0, must-revalidate",
+          "cf_cache_status": "DYNAMIC",
+          "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Accept-Encoding",
+          "locked": true,
+          "content_field": "",
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "text_chunks": [
+            [
+              "e",
+              1712
+            ]
+          ],
+          "longest_string_chars": 278,
+          "has_audio_url": false
+        },
+        {
+          "chapter": 4,
+          "label": "locked",
+          "channel": "rsc",
+          "status": 200,
+          "content_type": "text/x-component",
+          "bytes": 15748,
+          "cache_control": "private, no-cache, no-store, max-age=0, must-revalidate, private, no-cache, no-store, max-age=0, must-revalidate",
+          "cf_cache_status": "DYNAMIC",
+          "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Accept-Encoding",
+          "locked": true,
+          "content_field": "",
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "text_chunks": [
+            [
+              "a",
+              1711
+            ]
+          ],
+          "longest_string_chars": 278,
+          "has_audio_url": false
+        },
+        {
+          "chapter": 4,
+          "label": "locked",
+          "channel": "prefetch",
+          "status": 200,
+          "content_type": "text/html; charset=utf-8",
+          "bytes": 39312,
+          "cache_control": "private, no-cache, no-store, max-age=0, must-revalidate, private, no-cache, no-store, max-age=0, must-revalidate",
+          "cf_cache_status": "DYNAMIC",
+          "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Accept-Encoding",
+          "locked": true,
+          "content_field": "",
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "text_chunks": [
+            [
+              "e",
+              1712
+            ]
+          ],
+          "longest_string_chars": 278,
+          "has_audio_url": false
+        }
+      ],
+      "toc_consistency": [
+        {
+          "chapter": 1,
+          "toc_isLocked": false,
+          "page_locked": false,
+          "body_chars": 38103,
+          "dom_prose_chars": 32943,
+          "consistent": true
+        },
+        {
+          "chapter": 2,
+          "toc_isLocked": false,
+          "page_locked": false,
+          "body_chars": 46326,
+          "dom_prose_chars": 41183,
+          "consistent": true
+        },
+        {
+          "chapter": 3,
+          "toc_isLocked": false,
+          "page_locked": false,
+          "body_chars": 72698,
+          "dom_prose_chars": 67555,
+          "consistent": true
+        },
+        {
+          "chapter": 4,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 5,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 6,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 7,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 8,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 9,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 10,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 11,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 12,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 13,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 14,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 15,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 16,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 17,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 18,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 19,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 20,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 21,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 22,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 23,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 24,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 25,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 26,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 27,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 28,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 29,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 30,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 31,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 32,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 33,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 34,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 35,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 36,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 37,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 38,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 39,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 40,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 41,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 42,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 43,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 44,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 45,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 46,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 47,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 48,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 49,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 50,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        },
+        {
+          "chapter": 51,
+          "toc_isLocked": true,
+          "page_locked": true,
+          "body_chars": 0,
+          "dom_prose_chars": 0,
+          "consistent": true
+        }
+      ],
+      "api": [
+        {
+          "path": "/api/stories?limit=5",
+          "status": 200,
+          "bytes": 14165,
+          "has_content_field": false,
+          "has_body_field": false,
+          "has_audio_url": false,
+          "chapterNumber_count": 0,
+          "isLocked_count": 0
+        },
+        {
+          "path": "/api/stories?include=chapters",
+          "status": 200,
+          "bytes": 35253,
+          "has_content_field": false,
+          "has_body_field": false,
+          "has_audio_url": false,
+          "chapterNumber_count": 0,
+          "isLocked_count": 0
+        },
+        {
+          "path": "/api/config",
+          "status": 200,
+          "bytes": 2185,
+          "has_content_field": false,
+          "has_body_field": false,
+          "has_audio_url": false,
+          "chapterNumber_count": 0,
+          "isLocked_count": 0
+        },
+        {
+          "path": "/api/favorites",
+          "status": 200,
+          "bytes": 16,
+          "has_content_field": false,
+          "has_body_field": false,
+          "has_audio_url": false,
+          "chapterNumber_count": 0,
+          "isLocked_count": 0
+        },
+        {
+          "path": "/api/notifications",
+          "status": 200,
+          "bytes": 36,
+          "has_content_field": false,
+          "has_body_field": false,
+          "has_audio_url": false,
+          "chapterNumber_count": 0,
+          "isLocked_count": 0
+        },
+        {
+          "path": "/api/user/audio-remaining",
+          "status": 200,
+          "bytes": 18,
+          "has_content_field": false,
+          "has_body_field": false,
+          "has_audio_url": false,
+          "chapterNumber_count": 0,
+          "isLocked_count": 0
+        },
+        {
+          "path": "/api/chapters/01KY3R1NDGX9TDNAQVWFEBBYQ9/comments",
+          "status": 200,
+          "bytes": 15,
+          "has_content_field": false,
+          "has_body_field": false,
+          "has_audio_url": false,
+          "chapterNumber_count": 0,
+          "isLocked_count": 0
+        }
+      ]
+    },
+    "cache": {
+      "repeat": [
+        {
+          "i": 0,
+          "status": 200,
+          "bytes": 2185,
+          "body_sha": "76eac9234a",
+          "cf": "DYNAMIC",
+          "age": null,
+          "etag": null
+        },
+        {
+          "i": 1,
+          "status": 200,
+          "bytes": 2185,
+          "body_sha": "76eac9234a",
+          "cf": "DYNAMIC",
+          "age": null,
+          "etag": null
+        },
+        {
+          "i": 2,
+          "status": 200,
+          "bytes": 2185,
+          "body_sha": "76eac9234a",
+          "cf": "DYNAMIC",
+          "age": null,
+          "etag": null
+        }
+      ],
+      "key_variants": [
+        {
+          "label": "anon",
+          "path": "/truyen/thanh-lanh-su-ton-mu-mat-roi-sao-lai-thanh-benh-kieu-me-do-de-the-nay/doc/1.html",
+          "status": 200,
+          "bytes": 127350,
+          "body_sha": "0dcee151b6",
+          "cf": "DYNAMIC",
+          "age": null,
+          "cache_control": "private, no-cache, no-store, max-age=0, must-revalidate, private, no-cache, no-store, max-age=0, must-revalidate",
+          "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Accept-Encoding",
+          "vary_has_cookie": false,
+          "set_cookie": false
+        },
+        {
+          "label": "fake_A",
+          "path": "/truyen/thanh-lanh-su-ton-mu-mat-roi-sao-lai-thanh-benh-kieu-me-do-de-the-nay/doc/1.html",
+          "status": 200,
+          "bytes": 127307,
+          "body_sha": "0166f3cb92",
+          "cf": "DYNAMIC",
+          "age": null,
+          "cache_control": "private, no-cache, no-store, max-age=0, must-revalidate, private, no-cache, no-store, max-age=0, must-revalidate",
+          "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Accept-Encoding",
+          "vary_has_cookie": false,
+          "set_cookie": false
+        },
+        {
+          "label": "fake_B",
+          "path": "/truyen/thanh-lanh-su-ton-mu-mat-roi-sao-lai-thanh-benh-kieu-me-do-de-the-nay/doc/1.html",
+          "status": 200,
+          "bytes": 127307,
+          "body_sha": "0166f3cb92",
+          "cf": "DYNAMIC",
+          "age": null,
+          "cache_control": "private, no-cache, no-store, max-age=0, must-revalidate, private, no-cache, no-store, max-age=0, must-revalidate",
+          "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Accept-Encoding",
+          "vary_has_cookie": false,
+          "set_cookie": false
+        },
+        {
+          "label": "authz_header",
+          "path": "/truyen/thanh-lanh-su-ton-mu-mat-roi-sao-lai-thanh-benh-kieu-me-do-de-the-nay/doc/1.html",
+          "status": 200,
+          "bytes": 127307,
+          "body_sha": "0166f3cb92",
+          "cf": "DYNAMIC",
+          "age": null,
+          "cache_control": "private, no-cache, no-store, max-age=0, must-revalidate, private, no-cache, no-store, max-age=0, must-revalidate",
+          "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Accept-Encoding",
+          "vary_has_cookie": false,
+          "set_cookie": false
+        },
+        {
+          "label": "query",
+          "path": "/truyen/thanh-lanh-su-ton-mu-mat-roi-sao-lai-thanh-benh-kieu-me-do-de-the-nay/doc/1.html?cachebust=xyz",
+          "status": 200,
+          "bytes": 127353,
+          "body_sha": "c2d47b21b2",
+          "cf": "DYNAMIC",
+          "age": null,
+          "cache_control": "private, no-cache, no-store, max-age=0, must-revalidate, private, no-cache, no-store, max-age=0, must-revalidate",
+          "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Accept-Encoding",
+          "vary_has_cookie": false,
+          "set_cookie": false
+        },
+        {
+          "label": "css_ext",
+          "path": "/truyen/thanh-lanh-su-ton-mu-mat-roi-sao-lai-thanh-benh-kieu-me-do-de-the-nay/doc/1.css",
+          "status": 200,
+          "bytes": 127303,
+          "body_sha": "012e80c024",
+          "cf": "BYPASS",
+          "age": null,
+          "cache_control": "private, no-cache, no-store, max-age=0, must-revalidate, private, no-cache, no-store, max-age=0, must-revalidate",
+          "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Accept-Encoding",
+          "vary_has_cookie": false,
+          "set_cookie": false
+        },
+        {
+          "label": "png_ext",
+          "path": "/truyen/thanh-lanh-su-ton-mu-mat-roi-sao-lai-thanh-benh-kieu-me-do-de-the-nay/doc/1.png",
+          "status": 200,
+          "bytes": 127303,
+          "body_sha": "cef0d7d204",
+          "cf": "BYPASS",
+          "age": null,
+          "cache_control": "private, no-cache, no-store, max-age=0, must-revalidate, private, no-cache, no-store, max-age=0, must-revalidate",
+          "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Accept-Encoding",
+          "vary_has_cookie": false,
+          "set_cookie": false
+        }
+      ],
+      "vary_alternation": [
+        {
+          "i": 0,
+          "req_rsc": true,
+          "content_type": "text/x-component",
+          "bytes": 15748,
+          "body_sha": "6e1dbbc264",
+          "cf": "DYNAMIC"
+        },
+        {
+          "i": 1,
+          "req_rsc": false,
+          "content_type": "text/html; charset=utf-8",
+          "bytes": 39312,
+          "body_sha": "3274c3dd0d",
+          "cf": "DYNAMIC"
+        },
+        {
+          "i": 2,
+          "req_rsc": true,
+          "content_type": "text/x-component",
+          "bytes": 15748,
+          "body_sha": "87100b8e25",
+          "cf": "DYNAMIC"
+        },
+        {
+          "i": 3,
+          "req_rsc": false,
+          "content_type": "text/html; charset=utf-8",
+          "bytes": 39312,
+          "body_sha": "3274c3dd0d",
+          "cf": "DYNAMIC"
+        },
+        {
+          "i": 4,
+          "req_rsc": true,
+          "content_type": "text/x-component",
+          "bytes": 15748,
+          "body_sha": "87100b8e25",
+          "cf": "DYNAMIC"
+        }
+      ],
+      "sessions": null,
+      "sessions_note": "Chua co TTM_COOKIE_A/B -> chua chung minh duoc cache isolation giua phien da mo khoa va chua mo khoa. Chay lai voi --sessions."
+    }
+  }
+}
