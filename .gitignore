@@ -1,0 +1,13 @@
+# Never commit session cookies / tokens used by the toolkit
+.env
+.env.*
+*.cookie
+*.cookies
+cookie.txt
+credentials.json
+
+# Python runtime artifacts
+__pycache__/
+*.py[cod]
+.venv/
+venv/
