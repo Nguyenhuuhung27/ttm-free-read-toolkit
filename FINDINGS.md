@@ -152,4 +152,28 @@ Parser chạy lại trên bản mới: ch.1 body 38 103 ký tự / `locked:false
    giữa page và API**, đáng viết thành finding riêng (TESTPLAN API-03).
 
 **Chưa làm được:** mọi test auth/IDOR/VIP/session cần 2 tài khoản (A free, B VIP);
-`TTM_COOKIE` vẫn rỗng. F2 chưa có mô tả gốc trong repo → chưa kết luận retest.
+`TTM_COOKIE` vẫn rỗng. **F2 đã retest xong lúc 20:0x** → xem `CONTROL_AUDIT.md` §4:
+phiên bản framework / PHP / đường dẫn nội bộ / stack **không còn tái hiện**; chỉ còn
+fingerprint cấu hình công khai. Mô tả gốc F2 vẫn chưa có trong repo, nên kết luận dựa
+trên 3 nội dung user nêu.
+
+## 12. Bổ sung 20:0x — phân lớp kiểm soát (xem `CONTROL_AUDIT.md`)
+
+- Đổi nhãn `LEAK` → `BODY_PRESENT` trong `ttm_recon.py`/`ttm_grab.py`: từ "LEAK" gây
+  hiểu nhầm thành "lấy được nội dung VIP". Chương khoá giờ là `LOCKED_EMPTY`.
+- **Lớp bị bỏ qua = L1 access gate (middleware)**: probe 10 đuôi path cho thấy **mọi
+  path có dấu chấm ở segment cuối** (`.html/.json/.txt/.css/.png/./.xhtml/%2Ehtml`)
+  đều 200, chỉ path không dấu chấm bị 307. Không phải riêng `.html`.
+- **HTTP 200 ≠ đọc được VIP**: ch.4 (`locked:true`) status 200 nhưng `content:""`,
+  RSC body 0, DOM `div.prose` 0, DOM tổng 774 ký tự ("Chương này đang bị khóa…").
+  Ch.1 (`locked:false`): RSC 38 103 / DOM 32 943 ký tự.
+- **Không có API nào cấp dữ liệu khoá**: 11 endpoint, 0 field `content`/`text`/`body`,
+  0 `audioUrl`; chuỗi dài nhất `/api/stories` là `contentDescription` (mô tả công khai).
+- **F2**: 500 → `{"error":"Internal error"}` (26 bytes), 405 rỗng, 400 generic NextAuth,
+  404 không lộ buildId/path FS. `?next=` chỉ self-reflect giá trị client gửi, external/js
+  bị chuẩn hoá về `/`. Không request file cấu hình/bí mật.
+- **Cấu hình**: CORS không reflect Origin (preflight 204 không ACAO), cookie `__Host-`/
+  `__Secure-` đúng luật, 6 security headers vắng, `Cache-Control` mâu thuẫn/lặp,
+  `Vary` thiếu `Cookie`, `limit` thiếu validate (500 / không clamp) → **hardening**,
+  chưa phân loại thành lỗ hổng khai thác được.
+

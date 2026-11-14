@@ -155,25 +155,24 @@ NextAuth `signin/callback`. **Không có CSP/X-Frame-Options/X-Content-Type-Opti
 
 ## 7. Information disclosure — Retest F2 trên deployment mới
 
-**F2 chưa có mô tả gốc trong repo này** (FINDINGS.md dùng đánh số mục, không có "F2").
-Cần bạn cung cấp nội dung F2 để retest đúng kỳ vọng. Trong lúc chờ, đây là bộ retest
-thụ động cho mọi finding dạng info disclosure:
-
-| TC | Cách thử | Kết quả hiện tại (19:14) |
+| TC | Cách thử | Kết quả retest 20:0x (`CONTROL_AUDIT.md` §4) |
 |---|---|---|
-| INF-01 | Bypass `.html` còn sống không | **CÒN**: 200 / 127 350 bytes trên bản `lastmod=06:31:36Z` (chưa fix) |
-| INF-02 | `GET /khong-co-pass?error=1` có lộ lý do / key hợp lệ trong DOM không | Chưa đo sâu |
-| INF-03 | 404 page có lộ stack/buildId/path nội bộ không | `buildId` không còn trong HTML của `/dang-nhap`; các trang lỗi có nhắc chunk `audioweb_*` |
-| INF-04 | `/api/config` có lộ secret (Google Client ID là public, OK) — dò thêm field `ad_*_html`, `custom_*_html` | Chứa `custom_head_html` (GTM) — public, nhưng là sink XSS tiềm năng |
+| INF-01 | Bypass `.html` còn sống không | **CÒN**: 200 / 127 350 bytes. Mở rộng: **mọi đuôi có dấu chấm** (`.json/.txt/.css/.png/./.xhtml/%2Ehtml`) đều 200 → lỗi matcher middleware |
+| INF-02 | `GET /khong-co-pass?error=1` có lộ lý do / key hợp lệ trong DOM không | **Không** lộ lý do; `?next=` chỉ self-reflect, external/`javascript:`/`<script>` bị chuẩn hoá về `/` |
+| INF-03 | 404 page có lộ stack/buildId/path nội bộ không | **KHÔNG**: 0 match `/var/www`, `C:\`, `.next/server`, `node_modules/`, `process.env.*`, `buildId`, stack trace. Chỉ có tên chunk build công khai |
+| INF-04 | `/api/config` có lộ secret — `ad_*_html`, `custom_*_html` | `custom_head_html` (GTM) — public; **không** có secret pattern (0 match `DATABASE_URL`/`NEXTAUTH_SECRET`/private key) |
 | INF-05 | `robots.txt` / sitemap lộ route admin, `/api/*`, path ẩn | `sitemaps/0.xml` 45 000 loc, `1.xml` 23 510 loc `/doc/<N>` — public theo thiết kế |
 | INF-06 | JS chunk lộ endpoint nội bộ, `NEXT_PUBLIC_*`, key | Đã trích: `/api/listening-history`, `/api/user/audio-remaining`, `/api/chapter-errors`, `/api/reading-history`, `/api/chapters/<id>/...` — không thấy secret |
-| INF-07 | Error message khi `chapterId` sai / method sai | `/api/chapters/<id>/unlock` → 405, `/api/auth/me` → 400 "This action with HTTP GET is not supported by NextAuth.js" (lộ framework, mức thấp) |
-| INF-08 | So sánh `lastmod` / `buildId` / chunk hash / độ dài `/doc/1.html` giữa 2 lần đo | **Đã đổi 3 lần trong cùng phiên** (mục 0) → retest có giá trị, bắt buộc gắn fingerprint |
+| INF-07 | Error message / exception / phiên bản / PHP | **Không còn phiên bản, PHP, stack**. 500 → `{"error":"Internal error"}` (26 bytes), 405 → rỗng, 400 → generic NextAuth, `X-Powered-By: Next.js` (không số phiên bản) |
+| INF-08 | So sánh `lastmod` / chunk hash / độ dài `/doc/1.html` giữa 2 lần đo | **Đã đổi 3 lần trong cùng phiên** (mục 0) → retest có giá trị, bắt buộc gắn fingerprint |
 
-**Kết luận retest sơ bộ:** F1 (bypass `.html`) **vẫn tồn tại** trên deployment mới, cấu
-trúc RSC không đổi. F2 cần mô tả gốc để kết luận — nếu F2 là info disclosure qua
-error/header, thì 2 ứng viên mới đáng retest là: header `Cache-Control` lặp/mâu thuẫn
-và 6 security headers vắng mặt.
+**Kết luận retest F2 (20:0x):** các thông tin nhạy cảm trong báo cáo cũ — phiên bản
+framework, PHP, đường dẫn nội bộ — **không còn tái hiện**; response lỗi đã ẩn stack/SQL/
+env/secret. Thứ còn lại là fingerprint cấu hình công khai (`Server: cloudflare`,
+`X-Powered-By: Next.js`, tên chunk). **Không phân loại thành lỗ hổng khai thác được.**
+Không hề request tới file cấu hình/bí mật. Chi tiết: `CONTROL_AUDIT.md` §4.
+F1 (bypass gate) **vẫn tồn tại** nhưng chỉ mở nội dung công khai (§1–3 của báo cáo đó).
+Mô tả gốc F2 vẫn chưa có trong repo → kết luận dựa trên 3 nội dung user nêu.
 
 ---
 

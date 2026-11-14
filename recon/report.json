@@ -1,6 +1,6 @@
 {
   "slug": "thanh-lanh-su-ton-mu-mat-roi-sao-lai-thanh-benh-kieu-me-do-de-the-nay",
-  "at": "2026-11-14T11:43:19.762962+00:00",
+  "at": "2026-11-14T13:15:36.787851+00:00",
   "with_cookie": false,
   "chapters": [
     {
@@ -8,7 +8,7 @@
       "url": "https://tieuthuyetmang.com/truyen/thanh-lanh-su-ton-mu-mat-roi-sao-lai-thanh-benh-kieu-me-do-de-the-nay/doc/1.html",
       "status": 200,
       "with_cookie": false,
-      "verdict": "LEAK",
+      "verdict": "BODY_PRESENT",
       "locked_flag": false,
       "chapter_id": "01KY3R0BEJV8Z1ZJ6HHJGFMAMP",
       "title": "[ YTB TẬP 1 ] Chương 1-5",
@@ -20,7 +20,7 @@
       "url": "https://tieuthuyetmang.com/truyen/thanh-lanh-su-ton-mu-mat-roi-sao-lai-thanh-benh-kieu-me-do-de-the-nay/doc/2.html",
       "status": 200,
       "with_cookie": false,
-      "verdict": "LEAK",
+      "verdict": "BODY_PRESENT",
       "locked_flag": false,
       "chapter_id": "01KY3R0Q27MVZXTR8HE31R7AVE",
       "title": "Chương 6-10",
@@ -32,7 +32,7 @@
       "url": "https://tieuthuyetmang.com/truyen/thanh-lanh-su-ton-mu-mat-roi-sao-lai-thanh-benh-kieu-me-do-de-the-nay/doc/3.html",
       "status": 200,
       "with_cookie": false,
-      "verdict": "LEAK",
+      "verdict": "BODY_PRESENT",
       "locked_flag": false,
       "chapter_id": "01KY3R17HH3FKCADAN8KKB949F",
       "title": "Chương 11-15",
@@ -44,7 +44,7 @@
       "url": "https://tieuthuyetmang.com/truyen/thanh-lanh-su-ton-mu-mat-roi-sao-lai-thanh-benh-kieu-me-do-de-the-nay/doc/4.html",
       "status": 200,
       "with_cookie": false,
-      "verdict": "GATED",
+      "verdict": "LOCKED_EMPTY",
       "locked_flag": true,
       "chapter_id": "01KY3R1NDGX9TDNAQVWFEBBYQ9",
       "title": "Chương 16-20",
@@ -52,39 +52,6 @@
       "excerpt": ""
     }
   ],
-  "audio": [
-    {
-      "number": 1,
-      "url": "https://tieuthuyetmang.com/truyen/thanh-lanh-su-ton-mu-mat-roi-sao-lai-thanh-benh-kieu-me-do-de-the-nay/nghe/1.html",
-      "status": 200,
-      "has_audio_prop": false,
-      "media": "",
-      "verdict": "AUDIO_LOCKED"
-    },
-    {
-      "number": 2,
-      "url": "https://tieuthuyetmang.com/truyen/thanh-lanh-su-ton-mu-mat-roi-sao-lai-thanh-benh-kieu-me-do-de-the-nay/nghe/2.html",
-      "status": 200,
-      "has_audio_prop": false,
-      "media": "",
-      "verdict": "NO_AUDIO"
-    },
-    {
-      "number": 3,
-      "url": "https://tieuthuyetmang.com/truyen/thanh-lanh-su-ton-mu-mat-roi-sao-lai-thanh-benh-kieu-me-do-de-the-nay/nghe/3.html",
-      "status": 200,
-      "has_audio_prop": false,
-      "media": "",
-      "verdict": "NO_AUDIO"
-    },
-    {
-      "number": 4,
-      "url": "https://tieuthuyetmang.com/truyen/thanh-lanh-su-ton-mu-mat-roi-sao-lai-thanh-benh-kieu-me-do-de-the-nay/nghe/4.html",
-      "status": 200,
-      "has_audio_prop": false,
-      "media": "",
-      "verdict": "NO_AUDIO"
-    }
-  ],
+  "audio": [],
   "toc_size": 51
 }

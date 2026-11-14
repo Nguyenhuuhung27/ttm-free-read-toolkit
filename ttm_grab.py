@@ -92,7 +92,7 @@ def main() -> int:
             continue
 
         r = probe_doc(slug, n, cookie)
-        if r["verdict"] != "LEAK":
+        if r["verdict"] != "BODY_PRESENT":
             (gated if r["locked_flag"] else skipped).append(n)
             print(f"  ch.{n}: {r['verdict']} (locked={r['locked_flag']})")
             continue

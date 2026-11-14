@@ -157,10 +157,16 @@ def probe_doc(slug: str, number: int, cookie: str | None) -> dict:
     props = parse_chapter_props(stream)
     locked = bool(props.get("locked"))
 
-    if locked or len(body) < MIN_BODY:
-        verdict = "GATED"
+    if locked:
+        # Khoá nội dung ở TẦNG SERVER: props.locked=true, content rỗng.
+        # Đây KHÔNG phải "chưa đọc được vì UI", cũng KHÔNG phải "đã lấy được".
+        verdict = "LOCKED_EMPTY"
+    elif len(body) >= MIN_BODY:
+        # Chương MỞ (isLocked=false): body có trong payload. Không gọi là LEAK —
+        # từ "LEAK" dễ bị hiểu nhầm thành "lấy được nội dung VIP".
+        verdict = "BODY_PRESENT"
     else:
-        verdict = "LEAK" if len(body) >= MIN_BODY else "EMPTY"
+        verdict = "EMPTY"
 
     return {
         "number": number, "url": url, "status": r.status_code,

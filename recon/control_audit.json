@@ -1,0 +1,994 @@
+{
+  "at": "2026-11-14T13:10:26.304897+00:00",
+  "origin": "https://tieuthuyetmang.com",
+  "method": "GET/OPTIONS only",
+  "no_auth_cookie": true,
+  "sections": {
+    "gate": {
+      "rows": [
+        {
+          "path": "/",
+          "status": 307,
+          "state": "GATE_REDIRECT",
+          "location": "https://tieuthuyetmang.com/khong-co-pass?next=%2F",
+          "bytes": 49,
+          "body_sha": "6d27fa517c01"
+        },
+        {
+          "path": "/truyen",
+          "status": 307,
+          "state": "GATE_REDIRECT",
+          "location": "https://tieuthuyetmang.com/khong-co-pass?next=%2Ftruyen",
+          "bytes": 55,
+          "body_sha": "513418cce6b3"
+        },
+        {
+          "path": "/truyen/thanh-lanh-su-ton-mu-mat-roi-sao-lai-thanh-benh-kieu-me-do-de-the-nay",
+          "status": 307,
+          "state": "GATE_REDIRECT",
+          "location": "https://tieuthuyetmang.com/khong-co-pass?next=%2Ftruyen%2Fthanh-lanh-su-ton-mu-mat-roi-sao-lai-thanh-benh-kieu-me-do-de-the-nay",
+          "bytes": 127,
+          "body_sha": "469ca820225e"
+        },
+        {
+          "path": "/dang-nhap",
+          "status": 200,
+          "state": "NO_GATE",
+          "location": null,
+          "bytes": 20838,
+          "body_sha": "802a87815f3d"
+        },
+        {
+          "path": "/khong-co-pass",
+          "status": 200,
+          "state": "NO_GATE",
+          "location": null,
+          "bytes": 14849,
+          "body_sha": "a81aa99cb217"
+        },
+        {
+          "path": "/robots.txt",
+          "status": 200,
+          "state": "NO_GATE",
+          "location": null,
+          "bytes": 2676,
+          "body_sha": "3073d1e371af"
+        },
+        {
+          "path": "/sitemap.xml",
+          "status": 200,
+          "state": "NO_GATE",
+          "location": null,
+          "bytes": 382,
+          "body_sha": "491d977629d7"
+        },
+        {
+          "path": "/truyen/thanh-lanh-su-ton-mu-mat-roi-sao-lai-thanh-benh-kieu-me-do-de-the-nay/doc/1",
+          "status": 307,
+          "state": "GATE_REDIRECT",
+          "location": "https://tieuthuyetmang.com/khong-co-pass?next=%2Ftruyen%2Fthanh-lanh-su-ton-mu-mat-roi-sao-lai-thanh-benh-kieu-me-do-de-the-nay%2Fdoc%2F1",
+          "bytes": 137,
+          "body_sha": "8381993d016f"
+        },
+        {
+          "path": "/truyen/thanh-lanh-su-ton-mu-mat-roi-sao-lai-thanh-benh-kieu-me-do-de-the-nay/doc/1.html",
+          "status": 200,
+          "state": "NO_GATE",
+          "location": null,
+          "bytes": 127350,
+          "body_sha": "0dcee151b6cd"
+        },
+        {
+          "path": "/truyen/thanh-lanh-su-ton-mu-mat-roi-sao-lai-thanh-benh-kieu-me-do-de-the-nay/doc/4",
+          "status": 307,
+          "state": "GATE_REDIRECT",
+          "location": "https://tieuthuyetmang.com/khong-co-pass?next=%2Ftruyen%2Fthanh-lanh-su-ton-mu-mat-roi-sao-lai-thanh-benh-kieu-me-do-de-the-nay%2Fdoc%2F4",
+          "bytes": 137,
+          "body_sha": "5933f0de2fbe"
+        },
+        {
+          "path": "/truyen/thanh-lanh-su-ton-mu-mat-roi-sao-lai-thanh-benh-kieu-me-do-de-the-nay/doc/4.html",
+          "status": 200,
+          "state": "NO_GATE",
+          "location": null,
+          "bytes": 39355,
+          "body_sha": "753991b60b66"
+        },
+        {
+          "path": "/truyen/thanh-lanh-su-ton-mu-mat-roi-sao-lai-thanh-benh-kieu-me-do-de-the-nay/nghe/1",
+          "status": 307,
+          "state": "GATE_REDIRECT",
+          "location": "https://tieuthuyetmang.com/khong-co-pass?next=%2Ftruyen%2Fthanh-lanh-su-ton-mu-mat-roi-sao-lai-thanh-benh-kieu-me-do-de-the-nay%2Fnghe%2F1",
+          "bytes": 138,
+          "body_sha": "24365a27910f"
+        },
+        {
+          "path": "/truyen/thanh-lanh-su-ton-mu-mat-roi-sao-lai-thanh-benh-kieu-me-do-de-the-nay/nghe/1.html",
+          "status": 200,
+          "state": "NO_GATE",
+          "location": null,
+          "bytes": 26794,
+          "body_sha": "40546d57e583"
+        },
+        {
+          "path": "/api/config",
+          "status": 200,
+          "state": "NO_GATE",
+          "location": null,
+          "bytes": 2185,
+          "body_sha": "76eac9234a7c"
+        },
+        {
+          "path": "/api/stories",
+          "status": 200,
+          "state": "NO_GATE",
+          "location": null,
+          "bytes": 35031,
+          "body_sha": "da0e29659ac5"
+        },
+        {
+          "path": "/api/favorites",
+          "status": 200,
+          "state": "NO_GATE",
+          "location": null,
+          "bytes": 16,
+          "body_sha": "3e86695c9806"
+        },
+        {
+          "path": "/api/auth/session",
+          "status": 200,
+          "state": "NO_GATE",
+          "location": null,
+          "bytes": 2,
+          "body_sha": "44136fa355b3"
+        },
+        {
+          "path": "/_next/static/chunks/webpack-d24d2342890c2f44.js",
+          "status": 200,
+          "state": "NO_GATE",
+          "location": null,
+          "bytes": 3733,
+          "body_sha": "eb153ad823a5"
+        },
+        {
+          "path": "/api/config.html",
+          "status": 404,
+          "state": "HTTP_404",
+          "location": null,
+          "bytes": 14415,
+          "body_sha": "cf6d5fbbd30a"
+        },
+        {
+          "path": "/dang-nhap.html",
+          "status": 404,
+          "state": "HTTP_404",
+          "location": null,
+          "bytes": 14410,
+          "body_sha": "a52f3b2102bf"
+        },
+        {
+          "path": "/truyen.html",
+          "status": 404,
+          "state": "HTTP_404",
+          "location": null,
+          "bytes": 14407,
+          "body_sha": "851272361423"
+        }
+      ],
+      "dot_suffix_probe": [
+        {
+          "suffix": "(none)",
+          "status": 307,
+          "gated": true,
+          "bytes": 137
+        },
+        {
+          "suffix": ".html",
+          "status": 200,
+          "gated": false,
+          "bytes": 127350
+        },
+        {
+          "suffix": ".json",
+          "status": 200,
+          "gated": false,
+          "bytes": 127307
+        },
+        {
+          "suffix": ".txt",
+          "status": 200,
+          "gated": false,
+          "bytes": 127303
+        },
+        {
+          "suffix": ".css",
+          "status": 200,
+          "gated": false,
+          "bytes": 127303
+        },
+        {
+          "suffix": ".png",
+          "status": 200,
+          "gated": false,
+          "bytes": 127303
+        },
+        {
+          "suffix": ".",
+          "status": 200,
+          "gated": false,
+          "bytes": 127334
+        },
+        {
+          "suffix": ".xhtml",
+          "status": 200,
+          "gated": false,
+          "bytes": 127311
+        },
+        {
+          "suffix": "%2Ehtml",
+          "status": 200,
+          "gated": false,
+          "bytes": 127307
+        },
+        {
+          "suffix": ".html/x",
+          "status": 404,
+          "gated": false,
+          "bytes": 14501
+        }
+      ],
+      "gate_response_headers": {
+        "Server": "cloudflare",
+        "location": "https://tieuthuyetmang.com/khong-co-pass?next=%2Ftruyen%2Fthanh-lanh-su-ton-mu-mat-roi-sao-lai-thanh-benh-kieu-me-do-de-the-nay%2Fdoc%2F1"
+      }
+    },
+    "content": {
+      "chapters": {
+        "free": {
+          "url": "/truyen/thanh-lanh-su-ton-mu-mat-roi-sao-lai-thanh-benh-kieu-me-do-de-the-nay/doc/1.html",
+          "status": 200,
+          "bytes": 127350,
+          "props": {
+            "chapterNumber": 1,
+            "chapterId": "01KY3R0BEJV8Z1ZJ6HHJGFMAMP",
+            "chapterTitle": "[ YTB TẬP 1 ] Chương 1-5",
+            "content": "$1b",
+            "locked": false,
+            "remainingDailyUnlocks": 0,
+            "nextChapterLocked": false
+          },
+          "rsc_content_field": "'$1b'",
+          "rsc_body_chars": 38103,
+          "rsc_body_excerpt": "Chuong 1\r\nTruyện đơn nữ chính, hai phía cùng hướng về nhau, sư tôn thì miệng nói một đằng lòng làm một nẻo, càng ngày càng chiều chuộng, nam chính đánh thẳng và",
+          "longest_payload_string_chars": 278,
+          "longest_payload_string_at": 8375,
+          "longest_payload_string_excerpt": "(function(){try{var t=localStorage.getItem('audioweb-theme');var r=t==='dark'?'dark':t==='light'?'light':(typeof window!=='undefined'&&window.matchMedia('(prefe",
+          "dom_selector_chars": {
+            "article": 0,
+            "div.prose, .prose": 32943,
+            "[class*=whitespace-pre-wrap]": 32943
+          },
+          "dom_total_chars": 33647,
+          "dom_mentions_locked": true,
+          "contains_audio_url": false,
+          "toc_size": 51
+        },
+        "locked": {
+          "url": "/truyen/thanh-lanh-su-ton-mu-mat-roi-sao-lai-thanh-benh-kieu-me-do-de-the-nay/doc/4.html",
+          "status": 200,
+          "bytes": 39312,
+          "props": {
+            "chapterNumber": 4,
+            "chapterId": "01KY3R1NDGX9TDNAQVWFEBBYQ9",
+            "chapterTitle": "Chương 16-20",
+            "content": "",
+            "locked": true,
+            "remainingDailyUnlocks": 0,
+            "nextChapterLocked": true
+          },
+          "rsc_content_field": "''",
+          "rsc_body_chars": 0,
+          "rsc_body_excerpt": "",
+          "longest_payload_string_chars": 278,
+          "longest_payload_string_at": 8375,
+          "longest_payload_string_excerpt": "(function(){try{var t=localStorage.getItem('audioweb-theme');var r=t==='dark'?'dark':t==='light'?'light':(typeof window!=='undefined'&&window.matchMedia('(prefe",
+          "dom_selector_chars": {
+            "article": 0,
+            "div.prose, .prose": 0,
+            "[class*=whitespace-pre-wrap]": 0
+          },
+          "dom_total_chars": 774,
+          "dom_mentions_locked": true,
+          "contains_audio_url": false,
+          "toc_size": 51
+        }
+      },
+      "api": [
+        {
+          "path": "/api/stories?limit=5",
+          "status": 200,
+          "bytes": 14512,
+          "content_type": "application/json",
+          "has_content_field": false,
+          "has_body_like_field": false,
+          "has_audio_url": false,
+          "max_string_chars": 1749,
+          "excerpt": "[{\"id\":\"01KVC9MMAWZCQMPM888B102P9Q\",\"title\":\"Dỗ Dành Giáo Sư Cấm Dục: Chị Giáo Sư Có Thai Rồi!\",\"slug\":\"do-danh-giao-su-cam-duc-chi-giao-su-co-thai-roi\",\"coverU",
+          "body_sha": "e23a6e127fba",
+          "json_keys": "list[5]"
+        },
+        {
+          "path": "/api/config",
+          "status": 200,
+          "bytes": 2185,
+          "content_type": "application/json",
+          "has_content_field": false,
+          "has_body_like_field": false,
+          "has_audio_url": false,
+          "max_string_chars": 295,
+          "excerpt": "{\"googleEnabled\":true,\"googleClientId\":\"659932035516-en13ngdpges6r73rarpnuqashrcd11j9.apps.googleusercontent.com\",\"site\":{\"site_name\":\"Tieuthuyetmang\",\"logo_url",
+          "body_sha": "76eac9234a7c",
+          "json_keys": [
+            "facebookEnabled",
+            "googleClientId",
+            "googleEnabled",
+            "site"
+          ]
+        },
+        {
+          "path": "/api/favorites",
+          "status": 200,
+          "bytes": 16,
+          "content_type": "application/json",
+          "has_content_field": false,
+          "has_body_like_field": false,
+          "has_audio_url": false,
+          "max_string_chars": 0,
+          "excerpt": "{\"favorites\":[]}",
+          "body_sha": "3e86695c9806",
+          "json_keys": [
+            "favorites"
+          ]
+        },
+        {
+          "path": "/api/notifications",
+          "status": 200,
+          "bytes": 36,
+          "content_type": "application/json",
+          "has_content_field": false,
+          "has_body_like_field": false,
+          "has_audio_url": false,
+          "max_string_chars": 0,
+          "excerpt": "{\"notifications\":[],\"unreadCount\":0}",
+          "body_sha": "3e443ad8918f",
+          "json_keys": [
+            "notifications",
+            "unreadCount"
+          ]
+        },
+        {
+          "path": "/api/listening-history",
+          "status": 200,
+          "bytes": 47,
+          "content_type": "application/json",
+          "has_content_field": false,
+          "has_body_like_field": false,
+          "has_audio_url": false,
+          "max_string_chars": 0,
+          "excerpt": "{\"history\":[],\"total\":0,\"page\":1,\"pageSize\":20}",
+          "body_sha": "eccd7877b6b4",
+          "json_keys": [
+            "history",
+            "page",
+            "pageSize",
+            "total"
+          ]
+        },
+        {
+          "path": "/api/user/audio-remaining",
+          "status": 200,
+          "bytes": 18,
+          "content_type": "application/json",
+          "has_content_field": false,
+          "has_body_like_field": false,
+          "has_audio_url": false,
+          "max_string_chars": 0,
+          "excerpt": "{\"remaining\":null}",
+          "body_sha": "fa6b1c7d9176",
+          "json_keys": [
+            "remaining"
+          ]
+        },
+        {
+          "path": "/api/search?q=a",
+          "status": 200,
+          "bytes": 14,
+          "content_type": "application/json",
+          "has_content_field": false,
+          "has_body_like_field": false,
+          "has_audio_url": false,
+          "max_string_chars": 0,
+          "excerpt": "{\"stories\":[]}",
+          "body_sha": "fb4f134f3a8a",
+          "json_keys": [
+            "stories"
+          ]
+        },
+        {
+          "path": "/api/recommend",
+          "status": 200,
+          "bytes": 21,
+          "content_type": "application/json",
+          "has_content_field": false,
+          "has_body_like_field": false,
+          "has_audio_url": false,
+          "max_string_chars": 0,
+          "excerpt": "{\"recommended\":false}",
+          "body_sha": "3cfe0851fe5d",
+          "json_keys": [
+            "recommended"
+          ]
+        },
+        {
+          "path": "/api/categories",
+          "status": 200,
+          "bytes": 2204,
+          "content_type": "application/json",
+          "has_content_field": false,
+          "has_body_like_field": false,
+          "has_audio_url": false,
+          "max_string_chars": 26,
+          "excerpt": "[{\"id\":\"01KNDWYVCCBCGVBHW5CN9T4KPN\",\"name\":\"Bách hợp\",\"slug\":\"bach-hop\"},{\"id\":\"01KJT5MN5CPTB9TZ5FAT7014W8\",\"name\":\"Bệnh kiều ( Yandere )\",\"slug\":\"benh-kieu\"},{",
+          "body_sha": "d4a8d288d4ff",
+          "json_keys": "list[29]"
+        },
+        {
+          "path": "/api/chapters/01KY3R1NDGX9TDNAQVWFEBBYQ9/comments",
+          "status": 200,
+          "bytes": 15,
+          "content_type": "application/json",
+          "has_content_field": false,
+          "has_body_like_field": false,
+          "has_audio_url": false,
+          "max_string_chars": 0,
+          "excerpt": "{\"comments\":[]}",
+          "body_sha": "9efdb10c81ea",
+          "json_keys": [
+            "comments"
+          ]
+        },
+        {
+          "path": "/api/chapters/01KY3R1NDGX9TDNAQVWFEBBYQ9/comments?limit=100",
+          "status": 200,
+          "bytes": 15,
+          "content_type": "application/json",
+          "has_content_field": false,
+          "has_body_like_field": false,
+          "has_audio_url": false,
+          "max_string_chars": 0,
+          "excerpt": "{\"comments\":[]}",
+          "body_sha": "9efdb10c81ea",
+          "json_keys": [
+            "comments"
+          ]
+        }
+      ]
+    },
+    "errors": {
+      "cases": [
+        {
+          "label": "404_page",
+          "path": "/truyen/does-not-exist-xyz/doc/999999.html",
+          "status": 404,
+          "bytes": 12764,
+          "body_sha": "4adedf8c1456",
+          "headers": {
+            "Server": "cloudflare",
+            "X-Powered-By": "Next.js",
+            "Content-Type": "text/html; charset=utf-8",
+            "Cache-Control": "private, no-cache, no-store, max-age=0, must-revalidate, private, no-cache, no-store, max-age=0, must-revalidate",
+            "x-nextjs-cache": null
+          },
+          "patterns_found": {
+            "php_version": false,
+            "framework_name": true,
+            "framework_version": false,
+            "internal_fs_path": false,
+            "stack_trace": false,
+            "exception_class": false,
+            "sql": false,
+            "secret_like": false,
+            "env_var": false
+          },
+          "snippets": {
+            "framework_name": "/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/webpack-d24d2342890c2f44.js\"/><script src=\"/_n"
+          },
+          "excerpt": "<!DOCTYPE html><html id=\"__next_error__\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_n"
+        },
+        {
+          "label": "404_api",
+          "path": "/api/route-that-does-not-exist",
+          "status": 404,
+          "bytes": 14429,
+          "body_sha": "6677fd4853c6",
+          "headers": {
+            "Server": "cloudflare",
+            "X-Powered-By": "Next.js",
+            "Content-Type": "text/html; charset=utf-8",
+            "Cache-Control": "private, no-cache, no-store, max-age=0, must-revalidate, private, no-store, max-age=0, must-revalidate",
+            "x-nextjs-cache": null
+          },
+          "patterns_found": {
+            "php_version": false,
+            "framework_name": true,
+            "framework_version": false,
+            "internal_fs_path": false,
+            "stack_trace": false,
+            "exception_class": false,
+            "sql": false,
+            "secret_like": false,
+            "env_var": false
+          },
+          "snippets": {
+            "framework_name": "evice-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/css/7d3616ee0ee43d3c.css\" data-precedence=\"next\"/><li"
+          },
+          "excerpt": "<!DOCTYPE html><html lang=\"vi\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/css/7d3616ee0ee43d3c.css\" da"
+        },
+        {
+          "label": "400_nextauth",
+          "path": "/api/auth/me",
+          "status": 400,
+          "bytes": 64,
+          "body_sha": "026db0a706ce",
+          "headers": {
+            "Server": "cloudflare",
+            "X-Powered-By": null,
+            "Content-Type": "text/plain;charset=UTF-8",
+            "Cache-Control": "private, no-store, max-age=0, must-revalidate",
+            "x-nextjs-cache": null
+          },
+          "patterns_found": {
+            "php_version": false,
+            "framework_name": true,
+            "framework_version": false,
+            "internal_fs_path": false,
+            "stack_trace": false,
+            "exception_class": true,
+            "sql": false,
+            "secret_like": false,
+            "env_var": false
+          },
+          "snippets": {
+            "framework_name": "Error: This action with HTTP GET is not supported by NextAuth.js",
+            "exception_class": "Error: This action with HTTP GET is not supported by NextAuth.js"
+          },
+          "excerpt": "Error: This action with HTTP GET is not supported by NextAuth.js"
+        },
+        {
+          "label": "405_unlock",
+          "path": "/api/chapters/01KY3R17HH3FKCADAN8KKB949F/unlock",
+          "status": 405,
+          "bytes": 0,
+          "body_sha": "e3b0c44298fc",
+          "headers": {
+            "Server": "cloudflare",
+            "X-Powered-By": null,
+            "Content-Type": null,
+            "Cache-Control": "private, no-store, max-age=0, must-revalidate",
+            "x-nextjs-cache": null
+          },
+          "patterns_found": {
+            "php_version": false,
+            "framework_name": false,
+            "framework_version": false,
+            "internal_fs_path": false,
+            "stack_trace": false,
+            "exception_class": false,
+            "sql": false,
+            "secret_like": false,
+            "env_var": false
+          },
+          "snippets": {},
+          "excerpt": ""
+        },
+        {
+          "label": "gate_error",
+          "path": "/khong-co-pass?error=1&next=%2Ftruyen",
+          "status": 200,
+          "bytes": 15139,
+          "body_sha": "8b249f0016a1",
+          "headers": {
+            "Server": "cloudflare",
+            "X-Powered-By": "Next.js",
+            "Content-Type": "text/html; charset=utf-8",
+            "Cache-Control": "private, no-cache, no-store, max-age=0, must-revalidate, private, no-cache, no-store, max-age=0, must-revalidate",
+            "x-nextjs-cache": null
+          },
+          "patterns_found": {
+            "php_version": false,
+            "framework_name": true,
+            "framework_version": false,
+            "internal_fs_path": false,
+            "stack_trace": false,
+            "exception_class": false,
+            "sql": false,
+            "secret_like": false,
+            "env_var": false
+          },
+          "snippets": {
+            "framework_name": "evice-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/css/7d3616ee0ee43d3c.css\" data-precedence=\"next\"/><li"
+          },
+          "excerpt": "<!DOCTYPE html><html lang=\"vi\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/css/7d3616ee0ee43d3c.css\" da"
+        },
+        {
+          "label": "bad_param",
+          "path": "/api/stories?limit=not-a-number",
+          "status": 500,
+          "bytes": 26,
+          "body_sha": "1ec612a13398",
+          "headers": {
+            "Server": "cloudflare",
+            "X-Powered-By": null,
+            "Content-Type": "application/json",
+            "Cache-Control": "private, no-store, max-age=0, must-revalidate",
+            "x-nextjs-cache": null
+          },
+          "patterns_found": {
+            "php_version": false,
+            "framework_name": false,
+            "framework_version": false,
+            "internal_fs_path": false,
+            "stack_trace": false,
+            "exception_class": false,
+            "sql": false,
+            "secret_like": false,
+            "env_var": false
+          },
+          "snippets": {},
+          "excerpt": "{\"error\":\"Internal error\"}"
+        },
+        {
+          "label": "bad_chapter",
+          "path": "/api/chapters/not-a-valid-id/comments",
+          "status": 200,
+          "bytes": 15,
+          "body_sha": "9efdb10c81ea",
+          "headers": {
+            "Server": "cloudflare",
+            "X-Powered-By": null,
+            "Content-Type": "application/json",
+            "Cache-Control": "private, no-store, max-age=0, must-revalidate",
+            "x-nextjs-cache": null
+          },
+          "patterns_found": {
+            "php_version": false,
+            "framework_name": false,
+            "framework_version": false,
+            "internal_fs_path": false,
+            "stack_trace": false,
+            "exception_class": false,
+            "sql": false,
+            "secret_like": false,
+            "env_var": false
+          },
+          "snippets": {},
+          "excerpt": "{\"comments\":[]}"
+        },
+        {
+          "label": "bad_search",
+          "path": "/api/search?q=%3Cscript%3Ealert(1)%3C%2Fscript%3E",
+          "status": 200,
+          "bytes": 14,
+          "body_sha": "fb4f134f3a8a",
+          "headers": {
+            "Server": "cloudflare",
+            "X-Powered-By": null,
+            "Content-Type": "application/json",
+            "Cache-Control": "private, no-store, max-age=0, must-revalidate",
+            "x-nextjs-cache": null
+          },
+          "patterns_found": {
+            "php_version": false,
+            "framework_name": false,
+            "framework_version": false,
+            "internal_fs_path": false,
+            "stack_trace": false,
+            "exception_class": false,
+            "sql": false,
+            "secret_like": false,
+            "env_var": false
+          },
+          "snippets": {},
+          "excerpt": "{\"stories\":[]}"
+        }
+      ],
+      "note": "Không thực hiện request nào tới /.env, /.git/*, /package.json, file cấu hình hay bí mật. Chỉ quan sát response lỗi tự nhiên."
+    },
+    "config": {
+      "security_headers": {
+        "page": {
+          "status": 200,
+          "headers": {
+            "Strict-Transport-Security": null,
+            "Content-Security-Policy": null,
+            "X-Frame-Options": null,
+            "X-Content-Type-Options": null,
+            "Referrer-Policy": null,
+            "Permissions-Policy": null,
+            "X-Powered-By": "Next.js",
+            "Server": "cloudflare"
+          },
+          "cache_control": "s-maxage=60, stale-while-revalidate, private, no-cache, no-store, max-age=0, must-revalidate",
+          "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Accept-Encoding",
+          "cf_cache_status": "DYNAMIC"
+        },
+        "api": {
+          "status": 200,
+          "headers": {
+            "Strict-Transport-Security": null,
+            "Content-Security-Policy": null,
+            "X-Frame-Options": null,
+            "X-Content-Type-Options": null,
+            "Referrer-Policy": null,
+            "Permissions-Policy": null,
+            "X-Powered-By": null,
+            "Server": "cloudflare"
+          },
+          "cache_control": "public, s-maxage=300, stale-while-revalidate=60, private, no-store, max-age=0, must-revalidate",
+          "vary": "Accept-Encoding, RSC, Next-Router-State-Tree, Next-Router-Prefetch",
+          "cf_cache_status": "DYNAMIC"
+        },
+        "notfound": {
+          "status": 404,
+          "headers": {
+            "Strict-Transport-Security": null,
+            "Content-Security-Policy": null,
+            "X-Frame-Options": null,
+            "X-Content-Type-Options": null,
+            "Referrer-Policy": null,
+            "Permissions-Policy": null,
+            "X-Powered-By": "Next.js",
+            "Server": "cloudflare"
+          },
+          "cache_control": "private, no-cache, no-store, max-age=0, must-revalidate, private, no-store, max-age=0, must-revalidate",
+          "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Accept-Encoding",
+          "cf_cache_status": "DYNAMIC"
+        },
+        "gate": {
+          "status": 200,
+          "headers": {
+            "Strict-Transport-Security": null,
+            "Content-Security-Policy": null,
+            "X-Frame-Options": null,
+            "X-Content-Type-Options": null,
+            "Referrer-Policy": null,
+            "Permissions-Policy": null,
+            "X-Powered-By": "Next.js",
+            "Server": "cloudflare"
+          },
+          "cache_control": "private, no-cache, no-store, max-age=0, must-revalidate, private, no-cache, no-store, max-age=0, must-revalidate",
+          "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Accept-Encoding",
+          "cf_cache_status": "DYNAMIC"
+        }
+      },
+      "cors": [
+        {
+          "origin": "https://evil.example",
+          "status": 200,
+          "acao": null,
+          "acac": null,
+          "vary": "Accept-Encoding, RSC, Next-Router-State-Tree, Next-Router-Prefetch"
+        },
+        {
+          "origin": "null",
+          "status": 200,
+          "acao": null,
+          "acac": null,
+          "vary": "Accept-Encoding, RSC, Next-Router-State-Tree, Next-Router-Prefetch"
+        },
+        {
+          "origin": "https://tieuthuyetmang.com",
+          "status": 200,
+          "acao": null,
+          "acac": null,
+          "vary": "Accept-Encoding, RSC, Next-Router-State-Tree, Next-Router-Prefetch"
+        },
+        {
+          "origin": "https://sub.tieuthuyetmang.com",
+          "status": 200,
+          "acao": null,
+          "acac": null,
+          "vary": "Accept-Encoding, RSC, Next-Router-State-Tree, Next-Router-Prefetch"
+        },
+        {
+          "origin": "https://tieuthuyetmang.com.evil.example",
+          "status": 200,
+          "acao": null,
+          "acac": null,
+          "vary": "Accept-Encoding, RSC, Next-Router-State-Tree, Next-Router-Prefetch"
+        },
+        {
+          "origin": "PREFLIGHT OPTIONS",
+          "status": 204,
+          "acao": null,
+          "acac": null,
+          "acam": null,
+          "acah": null
+        }
+      ],
+      "cookies": [
+        {
+          "from": "/api/auth/session",
+          "name": "__Host-next-auth.csrf-token",
+          "HttpOnly": true,
+          "Secure": true,
+          "SameSite": "Lax",
+          "Path": "/",
+          "has_Domain": false,
+          "prefix": "__Host-",
+          "prefix_rules_ok": true,
+          "value_logged": false
+        },
+        {
+          "from": "/api/auth/session",
+          "name": "__Secure-next-auth.callback-url",
+          "HttpOnly": true,
+          "Secure": true,
+          "SameSite": "Lax",
+          "Path": "/",
+          "has_Domain": false,
+          "prefix": "__Secure-",
+          "prefix_rules_ok": true,
+          "value_logged": false
+        },
+        {
+          "from": "/api/auth/csrf",
+          "name": "__Host-next-auth.csrf-token",
+          "HttpOnly": true,
+          "Secure": true,
+          "SameSite": "Lax",
+          "Path": "/",
+          "has_Domain": false,
+          "prefix": "__Host-",
+          "prefix_rules_ok": true,
+          "value_logged": false
+        },
+        {
+          "from": "/api/auth/csrf",
+          "name": "__Secure-next-auth.callback-url",
+          "HttpOnly": true,
+          "Secure": true,
+          "SameSite": "Lax",
+          "Path": "/",
+          "has_Domain": false,
+          "prefix": "__Secure-",
+          "prefix_rules_ok": true,
+          "value_logged": false
+        }
+      ],
+      "cache": [
+        {
+          "path": "/api/config",
+          "status": 200,
+          "cache_control": "public, s-maxage=300, stale-while-revalidate=60, private, no-store, max-age=0, must-revalidate",
+          "duplicate_private": false,
+          "conflicting_public_private": true,
+          "vary": "Accept-Encoding, RSC, Next-Router-State-Tree, Next-Router-Prefetch",
+          "vary_has_cookie": false,
+          "cf_cache_status": "DYNAMIC",
+          "etag": null
+        },
+        {
+          "path": "/api/stories",
+          "status": 200,
+          "cache_control": "private, no-store, max-age=0, must-revalidate",
+          "duplicate_private": false,
+          "conflicting_public_private": false,
+          "vary": "Accept-Encoding, RSC, Next-Router-State-Tree, Next-Router-Prefetch",
+          "vary_has_cookie": false,
+          "cf_cache_status": "DYNAMIC",
+          "etag": null
+        },
+        {
+          "path": "/api/favorites",
+          "status": 200,
+          "cache_control": "private, no-store, max-age=0, must-revalidate",
+          "duplicate_private": false,
+          "conflicting_public_private": false,
+          "vary": "Accept-Encoding, RSC, Next-Router-State-Tree, Next-Router-Prefetch",
+          "vary_has_cookie": false,
+          "cf_cache_status": "DYNAMIC",
+          "etag": null
+        },
+        {
+          "path": "/api/notifications",
+          "status": 200,
+          "cache_control": "private, no-store, max-age=0, must-revalidate",
+          "duplicate_private": false,
+          "conflicting_public_private": false,
+          "vary": "Accept-Encoding, RSC, Next-Router-State-Tree, Next-Router-Prefetch",
+          "vary_has_cookie": false,
+          "cf_cache_status": "DYNAMIC",
+          "etag": null
+        },
+        {
+          "path": "/api/user/audio-remaining",
+          "status": 200,
+          "cache_control": "private, no-store, max-age=0, must-revalidate",
+          "duplicate_private": false,
+          "conflicting_public_private": false,
+          "vary": "Accept-Encoding, RSC, Next-Router-State-Tree, Next-Router-Prefetch",
+          "vary_has_cookie": false,
+          "cf_cache_status": "DYNAMIC",
+          "etag": null
+        },
+        {
+          "path": "/api/auth/session",
+          "status": 200,
+          "cache_control": "private, no-cache, no-store, private, no-store, max-age=0, must-revalidate",
+          "duplicate_private": true,
+          "conflicting_public_private": false,
+          "vary": "Accept-Encoding, RSC, Next-Router-State-Tree, Next-Router-Prefetch",
+          "vary_has_cookie": false,
+          "cf_cache_status": "DYNAMIC",
+          "etag": null
+        },
+        {
+          "path": "/api/auth/csrf",
+          "status": 200,
+          "cache_control": "private, no-cache, no-store, private, no-store, max-age=0, must-revalidate",
+          "duplicate_private": true,
+          "conflicting_public_private": false,
+          "vary": "Accept-Encoding, RSC, Next-Router-State-Tree, Next-Router-Prefetch",
+          "vary_has_cookie": false,
+          "cf_cache_status": "DYNAMIC",
+          "etag": null
+        },
+        {
+          "path": "/api/listening-history",
+          "status": 200,
+          "cache_control": "private, no-store, max-age=0, must-revalidate, private, no-store, max-age=0, must-revalidate",
+          "duplicate_private": true,
+          "conflicting_public_private": false,
+          "vary": "Accept-Encoding, RSC, Next-Router-State-Tree, Next-Router-Prefetch",
+          "vary_has_cookie": false,
+          "cf_cache_status": "DYNAMIC",
+          "etag": null
+        },
+        {
+          "path": "/dang-nhap",
+          "status": 200,
+          "cache_control": "s-maxage=60, stale-while-revalidate, private, no-cache, no-store, max-age=0, must-revalidate",
+          "duplicate_private": false,
+          "conflicting_public_private": false,
+          "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Accept-Encoding",
+          "vary_has_cookie": false,
+          "cf_cache_status": "DYNAMIC",
+          "etag": null
+        },
+        {
+          "path": "/truyen/thanh-lanh-su-ton-mu-mat-roi-sao-lai-thanh-benh-kieu-me-do-de-the-nay/doc/1.html",
+          "status": 200,
+          "cache_control": "private, no-cache, no-store, max-age=0, must-revalidate, private, no-cache, no-store, max-age=0, must-revalidate",
+          "duplicate_private": true,
+          "conflicting_public_private": false,
+          "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Accept-Encoding",
+          "vary_has_cookie": false,
+          "cf_cache_status": "DYNAMIC",
+          "etag": null
+        },
+        {
+          "path": "/api/nope-xyz",
+          "status": 404,
+          "cache_control": "private, no-cache, no-store, max-age=0, must-revalidate, private, no-store, max-age=0, must-revalidate",
+          "duplicate_private": true,
+          "conflicting_public_private": false,
+          "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Accept-Encoding",
+          "vary_has_cookie": false,
+          "cf_cache_status": "DYNAMIC",
+          "etag": null
+        }
+      ]
+    }
+  }
+}
