@@ -1,0 +1,144 @@
+{
+  "at": "2026-11-14T12:18:01.285703+00:00",
+  "origin": "https://tieuthuyetmang.com",
+  "api": [
+    {
+      "path": "/api/config",
+      "status": 200,
+      "cache_control": "public, s-maxage=300, stale-while-revalidate=60, private, no-store, max-age=0, must-revalidate",
+      "vary": "Accept-Encoding, RSC, Next-Router-State-Tree, Next-Router-Prefetch",
+      "cf_cache_status": "DYNAMIC",
+      "acao": null,
+      "body_len": 2185,
+      "body_sha256_8": "76eac923"
+    },
+    {
+      "path": "/api/stories",
+      "status": 200,
+      "cache_control": "private, no-store, max-age=0, must-revalidate",
+      "vary": "Accept-Encoding, RSC, Next-Router-State-Tree, Next-Router-Prefetch",
+      "cf_cache_status": "DYNAMIC",
+      "acao": null,
+      "body_len": 36118,
+      "body_sha256_8": "d1751e89"
+    },
+    {
+      "path": "/api/auth/session",
+      "status": 200,
+      "cache_control": "private, no-cache, no-store, private, no-store, max-age=0, must-revalidate",
+      "vary": "Accept-Encoding, RSC, Next-Router-State-Tree, Next-Router-Prefetch",
+      "cf_cache_status": "DYNAMIC",
+      "acao": null,
+      "body_len": 2,
+      "body_sha256_8": "44136fa3"
+    },
+    {
+      "path": "/api/auth/csrf",
+      "status": 200,
+      "cache_control": "private, no-cache, no-store, private, no-store, max-age=0, must-revalidate",
+      "vary": "Accept-Encoding, RSC, Next-Router-State-Tree, Next-Router-Prefetch",
+      "cf_cache_status": "DYNAMIC",
+      "acao": null,
+      "body_len": 80,
+      "body_sha256_8": "d7b76ff6"
+    },
+    {
+      "path": "/api/favorites",
+      "status": 200,
+      "cache_control": "private, no-store, max-age=0, must-revalidate",
+      "vary": "Accept-Encoding, RSC, Next-Router-State-Tree, Next-Router-Prefetch",
+      "cf_cache_status": "DYNAMIC",
+      "acao": null,
+      "body_len": 16,
+      "body_sha256_8": "3e86695c"
+    },
+    {
+      "path": "/api/notifications",
+      "status": 200,
+      "cache_control": "private, no-store, max-age=0, must-revalidate",
+      "vary": "Accept-Encoding, RSC, Next-Router-State-Tree, Next-Router-Prefetch",
+      "cf_cache_status": "DYNAMIC",
+      "acao": null,
+      "body_len": 36,
+      "body_sha256_8": "3e443ad8"
+    },
+    {
+      "path": "/api/user/audio-remaining",
+      "status": 200,
+      "cache_control": "private, no-store, max-age=0, must-revalidate",
+      "vary": "Accept-Encoding, RSC, Next-Router-State-Tree, Next-Router-Prefetch",
+      "cf_cache_status": "DYNAMIC",
+      "acao": null,
+      "body_len": 18,
+      "body_sha256_8": "fa6b1c7d"
+    },
+    {
+      "path": "/api/listening-history",
+      "status": 200,
+      "cache_control": "private, no-store, max-age=0, must-revalidate, private, no-store, max-age=0, must-revalidate",
+      "vary": "Accept-Encoding, RSC, Next-Router-State-Tree, Next-Router-Prefetch",
+      "cf_cache_status": "DYNAMIC",
+      "acao": null,
+      "body_len": 47,
+      "body_sha256_8": "eccd7877"
+    }
+  ],
+  "security_headers": {
+    "Strict-Transport-Security": null,
+    "Content-Security-Policy": null,
+    "X-Frame-Options": null,
+    "X-Content-Type-Options": null,
+    "Referrer-Policy": null,
+    "Permissions-Policy": null
+  },
+  "cors": [
+    {
+      "path": "/api/config",
+      "acao": null,
+      "acac": null
+    },
+    {
+      "path": "/api/favorites",
+      "acao": null,
+      "acac": null
+    }
+  ],
+  "cache": [
+    {
+      "label": "anon",
+      "status": 200,
+      "body": "{\"favorites\":[]}",
+      "hash": "3e86695c"
+    },
+    {
+      "label": "fake_cookie",
+      "status": 200,
+      "body": "{\"favorites\":[]}",
+      "hash": "3e86695c",
+      "vary_has_cookie": false,
+      "cf_cache_status": "DYNAMIC"
+    }
+  ],
+  "gate_retest": [
+    {
+      "path": "/truyen/thanh-lanh-su-ton-mu-mat-roi-sao-lai-thanh-benh-kieu-me-do-de-the-nay/doc/1",
+      "status": 307,
+      "location": "https://tieuthuyetmang.com/khong-co-pass?next=%2Ftruyen%2Fthanh-lanh-su-ton-mu-mat-roi-sao-lai-thanh-benh-kieu-me-do-de-the-nay%2Fdoc%2F1",
+      "body_len": 137
+    },
+    {
+      "path": "/truyen/thanh-lanh-su-ton-mu-mat-roi-sao-lai-thanh-benh-kieu-me-do-de-the-nay/doc/1.html",
+      "status": 200,
+      "location": null,
+      "body_len": 127350
+    }
+  ],
+  "deployment": {
+    "sitemap_lastmod": [
+      "2026-11-14T06:31:36.718Z",
+      "2026-11-14T06:31:36.718Z"
+    ],
+    "access_gate_enabled": true,
+    "gate_flag_value": "1"
+  }
+}

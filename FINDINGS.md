@@ -114,3 +114,42 @@ Kết quả chạy thật (truyện `thanh-lanh-su-ton-mu-mat-roi-sao-lai-thanh-
 - chương 4,5,6 → GATED
 - audio ch.1 → AUDIO_LOCKED
 - chạy lần 2 → "da co, bo qua" (không tải lại) ✅
+
+---
+
+## 11. Bổ sung 19:2x — passive baseline (từ `ttm_passive_check.py`)
+
+Chỉ GET/đọc header, không ghi dữ liệu. Chi tiết testcase nằm trong `TESTPLAN.md`.
+
+**Deployment thay đổi 3 lần trong cùng phiên:**
+```
+sitemap lastmod  2026-11-14T05:11:37.633Z
+              -> 2026-11-13T17:19:30.465Z
+              -> 2026-11-14T06:31:36.718Z
+/doc/1.html      104 921 bytes -> 127 350 bytes
+```
+Parser chạy lại trên bản mới: ch.1 body 38 103 ký tự / `locked:false`, ch.4 body 0 /
+`locked:true`, TOC 51 chương → **cấu trúc RSC không đổi**. Bypass `.html` **vẫn còn**.
+
+**Quan sát mới (chưa kết luận là lỗi, cần 2 tài khoản test để chứng minh):**
+
+1. `/api/config` có `Cache-Control: public, s-maxage=300, stale-while-revalidate=60,
+   private, no-store, max-age=0, must-revalidate` — **mâu thuẫn public/private trong
+   cùng header**.
+2. `/api/auth/session`, `/api/listening-history` có `Cache-Control` **bị set trùng 2 lần**
+   (route handler + middleware).
+3. `Vary` trên mọi API = `Accept-Encoding, RSC, Next-Router-State-Tree,
+   Next-Router-Prefetch` — **thiếu `Cookie`**.
+4. Kiểm tra thực tế `/api/favorites` anon vs cookie giả: cùng hash `3e86695c`,
+   `cf-cache-status: DYNAMIC` → **hiện không leak cache**. Điểm 1–3 mới là yếu tố cấu
+   hình, chưa phải finding đã chứng minh.
+5. 6 security headers (HSTS, CSP, X-Frame-Options, X-Content-Type-Options,
+   Referrer-Policy, Permissions-Policy) **đều vắng** trên `/dang-nhap`.
+6. CORS: `Origin: https://evil.example` → không có `ACAO`/`ACAC` (baseline tốt).
+7. Cookie CSRF: `__Host-next-auth.csrf-token=…; Path=/; HttpOnly; Secure; SameSite=Lax`
+   — đúng chuẩn NextAuth.
+8. `/api/*` trả 200 anonymous trong khi mọi `/truyen/*` bị gate 307 → **phân quyền lệch
+   giữa page và API**, đáng viết thành finding riêng (TESTPLAN API-03).
+
+**Chưa làm được:** mọi test auth/IDOR/VIP/session cần 2 tài khoản (A free, B VIP);
+`TTM_COOKIE` vẫn rỗng. F2 chưa có mô tả gốc trong repo → chưa kết luận retest.
