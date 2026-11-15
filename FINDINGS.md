@@ -375,3 +375,32 @@ vẫn phải qua `audit_classify` và vẫn yêu cầu A có entitlement thật.
 liệu riêng, B nhận cùng body A → `needs_review=True`) và
 `test_ws2_identical_empty_records_are_not_flagged` (cả hai rỗng → không gắn cờ).
 Suite: **60/60 OK** (exit 0), trước đợt này 58/58.
+
+### 14.7 Sửa harness trước khi đánh giá runtime (vòng 20:2x — 6 khiếm khuyết D-1…D-6)
+
+> **Kết luận không đổi: vẫn 0 confirmed vulnerability.** Sáu mục dưới đây là **lỗi
+> của công cụ đo lường**, không phải lỗ hổng của ứng dụng. Mỗi mục đều kèm
+> regression test chống tái phát. **0 request nào tới ứng dụng** trong vòng này.
+
+| ID | Khiếm khuyết | Hệ quả nếu không sửa | Cách sửa |
+|---|---|---|---|
+| **D-1** | `staging_host_ok()` dùng **substring matching** (`any(h in host for h in STAGING_HINTS)`) | Host như `evil-staging.attacker.com` chứa chuỗi `staging` nên **lọt qua** → gửi cookie phiên tới host không kiểm chứng | **Exact-match allowlist** qua env mới `TTM_ALLOWED_STAGING_HOSTS`; chỉ `localhost`/`127.0.0.1`/`::1` được miễn. Host production bị chặn **ngay cả khi nằm trong allowlist** |
+| **D-2** | Khi gặp 403/429 chỉ `print()` rồi **tiếp tục chạy** | Bị server chặn/rate-limit mà vẫn tiếp tục dò → gây tải và làm nhiễu dữ liệu | `AbortRun` exception → dừng ngay, flush evidence, exit **4**. `429` luôn dừng; `403` dừng trừ khi là probe `expect_deny` (anon bị từ chối là kết quả **mong đợi**) |
+| **D-3** | `--allow-mutate` chỉ được kiểm ở `main()`, `Harness.post()` không tự chặn | Gọi `post()` từ code khác (hoặc từ workstream mới) sẽ **ghi dữ liệu ngoài ý muốn** | `Harness.post()` tự ném `WriteNotAuthorized` trừ khi có **cả hai**: `--allow-mutate` **và** `TTM_MUTATE_AUTHORIZED=1`. Mọi write đều đi qua `post()` và được ghi vào `evidence.writes` |
+| **D-4** | WS1/WS3 so sánh **hash toàn response** | Metadata động (timestamp, request id) khác nhau giữa hai request ⇒ **so sánh sai**: cùng nội dung bị coi là khác nhau, và ngược lại là leak thật bị bỏ sót | Trích **fingerprint nội dung được bảo vệ** (chuẩn hóa whitespace → SHA-256) độc lập metadata. Raw response vẫn **không** ghi ra evidence |
+| **D-5** | WS4: `consistent = not (b_media > 0 and a_media == 0)` → khi **cả hai đều không có audio** trả `OBSERVED` (kết luận thành công) | A được entitlement mà không có audio (entitlement có thể không gồm audio tier) bị báo là **hợp lệ** — phép thử vô nghĩa bị tính là đạt | `audio_entitlement_state()`: A thiu audio → `UNKNOWN_A_NO_AUDIO`; B có audio → `OBSERVED_NEEDS_REVIEW`; A có / B không → `OBSERVED_CONSISTENT`. Phát hiện **cả** thuộc tính `audioUrl` **và** media reference (mp3/m4a/aac/ogg/wav/m3u8); URL **không** bao giờ được lưu |
+| **D-6** | WS2 chỉ GET ⇒ **không kiểm tra được quyền sở hữu object** (ưu tiên 2 yêu cầu rõ) | Không có cách nào chứng minh B không đọc/sửa được record của A | Thêm **phase 2 có kiểm soát**: A tạo record synthetic (chỉ ID synthetic từ env) → kiểm tra B đọc được không, B ghi đè được không, anon có bị từ chối không, A còn truy cập được không. Verdict qua `object_authz_state()` |
+
+**Bổ sung — điểm an toàn bổ sung (không phải bug cũ):**
+- **Credential guard**: session có cookie chỉ được tạo *sau* khi host đã verify; mỗi
+  request lại kiểm tra `urlparse(url).hostname == verified_host`, và path phải bắt đầu
+  bằng `/` (chặn protocol-relative `//evil.host`).
+- **Exit code rõ ràng**: `0` = ok, `3` = prerequisite chưa sẵn sàng, `4` = bị dừng do
+  403/429 hoặc write chưa được ủy quyền.
+- **`expect_deny`**: chỉ áp cho probe anonymous trên endpoint yêu cầu đăng nhập — nơi
+  403/401 **là kết quả mong đợi**. Session A/B bị chặn 403 vẫn dừng ngay.
+
+**Test mới (25):** allowlist strict (5), abort 403/429 + expect-deny (3), write gating
+(3), credential guard (1), fingerprint nội dung độc lập metadata (2), audio signals +
+verdict (9), object authz verdict (4), WS2 phase 2 (4) — cộng 4 test end-to-end local.
+Suite: **103/103 OK** (exit 0), trước vòng này 60/60.

@@ -4,9 +4,9 @@
 
 Muc dich:
   `main()` -> Harness -> 5 workstream -> flush() -> recon/staging_audit.json
-  chua BAO GIO duoc chay trong mot lan. Day la duong chay that ma nguoi
-  dung se goi khi co staging that, nen phai kiem chay no voi mock server
-  local (127.0.0.1) de bat loi truoc khi chay tren moi truong that.
+  la duong chay that ma nguoi dung se goi khi co staging that, nen phai kiem
+  chay no voi mock server local (127.0.0.1) de bat loi truoc khi chay tren
+  moi truong that.
 
 Tinh chat:
   * Mock server chay tren 127.0.0.1:0 (ephemeral port) — khong dung domain
@@ -46,23 +46,19 @@ CHAPTER = "1"
 CHAPTER_ID = "01SYNTHETIC0000000000000"
 STORY_ID = "01SYNTHETICSTORY00000000"
 
-# Gia tri cookie GIA — chon khac nhau va KHONG trung voi ten bien moi truong
-# ("TTM_COOKIE_A") de phan biet "ten bien" (duoc phep xuat hien) voi
-# "gia tri cookie" (tuyet doi khong duoc xuat hien trong evidence).
 COOKIE_A_VALUE = "synthetic-session-alpha-9f3c2b"
 COOKIE_B_VALUE = "synthetic-session-beta-7a1d4e"
 
-# A co du lieu rieng (reading history), B nhan DUNG body cua A -> mo phong
-# cross-session leak de kiem chung co that su bat co `needs_review`.
-A_READING = json.dumps({"readingHistory": [{"storyId": STORY_ID,
-                                            "chapterNumber": 1}]}).encode()
-EMPTY_LIST = json.dumps({"readingHistory": []}).encode()
-EMPTY_FAV = json.dumps({"favorites": []}).encode()
+# A duoc entitlement (co audio), B khong (khong audio).
+AUDIO_PAGE_A = ('<!DOCTYPE html><html><body><div class="prose">'
+                'SYNTHETIC-TEST-BODY audio page for session A</div>'
+                '<script>self.__next_f.push([1,'
+                '"{\\"audioUrl\\":\\"https://cdn.synthetic.invalid/a.m4a\\"}"])'
+                '</script></body></html>')
 
-AUDIO_PAGE_A = ("""<!DOCTYPE html><html><body><div class="prose">
-SYNTHETIC-TEST-BODY audio page for session A
-</div><script>self.__next_f.push([1,"{\\"content\\":\\"\\",\\"locked\\":false}"])
-</script></body></html>""")
+READING_RECORD = json.dumps(
+    {"readingHistory": [{"storyId": STORY_ID, "chapterNumber": 1}]}).encode()
+READING_EMPTY = json.dumps({"readingHistory": []}).encode()
 
 
 def _who(headers) -> str:
@@ -93,10 +89,25 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def do_POST(self):
+        who = _who(self.headers)
+        path = self.path.split("?")[0]
+        length = int(self.headers.get("Content-Length") or 0)
+        if length:
+            self.rfile.read(length)
+        if path == "/api/reading-history":
+            # A duoc tao record; B bi tu choi (403) -> phai la ket qua
+            # mong doi, khong phai abort.
+            if who == "A":
+                return self._send(b'{"ok":true}', "application/json", status=201)
+            return self._send(b'{"error":"forbidden"}', "application/json",
+                              status=403)
+        return self._send(b"not found", "text/plain", status=404)
+
     def do_GET(self):
         who = _who(self.headers)
         path = self.path.split("?")[0]
-        html = ("text/html; charset=utf-8")
+        html = "text/html; charset=utf-8"
 
         if path == f"/truyen/{SLUG}/doc/{CHAPTER}.html":
             body = (FREE_HTML_LONG if who == "A" else LOCKED_HTML).encode()
@@ -105,12 +116,15 @@ class Handler(BaseHTTPRequestHandler):
             body = (AUDIO_PAGE_A if who == "A" else LOCKED_HTML).encode()
             return self._send(body, html)
         if path == "/api/reading-history":
-            # A co du lieu rieng; B nhan cung body A (mo phong leak).
-            return self._send(A_READING if who in ("A", "B") else EMPTY_LIST,
-                              "application/json")
+            if who == "A":
+                return self._send(READING_RECORD, "application/json")
+            if who == "B":
+                return self._send(READING_EMPTY, "application/json")
+            return self._send(b'{"error":"unauthorized"}', "application/json",
+                              status=401)
         if path in ("/api/favorites", "/api/notifications",
                     "/api/listening-history", "/api/user/audio-remaining"):
-            return self._send(EMPTY_FAV, "application/json")
+            return self._send(b'{"favorites":[]}', "application/json")
         if path == f"/api/chapters/{CHAPTER_ID}/comments":
             return self._send(b'{"comments":[]}', "application/json")
         if path == "/api/config":
@@ -140,9 +154,10 @@ class TestStagingEndToEndLocal(unittest.TestCase):
         self.server.shutdown()
         self.server.server_close()
 
-    def _env(self) -> dict:
-        return {
+    def _env(self, mutate: bool = False) -> dict:
+        env = {
             "TTM_STAGING_URL": f"http://127.0.0.1:{self.port}",
+            "TTM_ALLOWED_STAGING_HOSTS": "127.0.0.1",
             "TTM_COOKIE_A": COOKIE_A_VALUE,
             "TTM_COOKIE_B": COOKIE_B_VALUE,
             "TTM_TEST_SLUG": SLUG,
@@ -150,14 +165,18 @@ class TestStagingEndToEndLocal(unittest.TestCase):
             "TTM_TEST_CHAPTER_ID": CHAPTER_ID,
             "TTM_TEST_STORY_ID": STORY_ID,
         }
+        if mutate:
+            env["TTM_MUTATE_AUTHORIZED"] = "1"
+        return env
 
-    def _run(self, out: Path) -> int:
-        with TemporaryDirectory() as td:
-            argv = ["ttm_staging_audit.py", "--run", "--out", str(out)]
-            with mock.patch.dict(os.environ, self._env(), clear=True), \
-                 mock.patch.object(sa, "DELAY", 0), \
-                 mock.patch.object(sys, "argv", argv):
-                return sa.main()
+    def _run(self, out: Path, *, mutate: bool = False) -> int:
+        argv = ["ttm_staging_audit.py", "--run", "--out", str(out)]
+        if mutate:
+            argv.append("--allow-mutate")
+        with mock.patch.dict(os.environ, self._env(mutate), clear=True), \
+             mock.patch.object(sa, "DELAY", 0), \
+             mock.patch.object(sys, "argv", argv):
+            return sa.main()
 
     def test_end_to_end_run_produces_complete_evidence(self):
         with TemporaryDirectory() as td:
@@ -174,6 +193,7 @@ class TestStagingEndToEndLocal(unittest.TestCase):
                 self.assertIn(key, data["sections"])
                 self.assertIn("status", data["sections"][key])
             self.assertEqual(data["verdict"]["confirmed_vulnerabilities"], [])
+            self.assertFalse(data["aborted"])
 
             # 2) Rows duoc ghi nhung KHONG co secret
             self.assertGreater(len(data["rows"]), 20)
@@ -182,7 +202,6 @@ class TestStagingEndToEndLocal(unittest.TestCase):
             # hash trong prerequisites.sessions_fp).
             for secret in (COOKIE_A_VALUE, COOKIE_B_VALUE):
                 self.assertNotIn(secret, raw)
-            # Chi con ten bien moi truong (khong phai gia tri).
             self.assertIn("TTM_COOKIE_A", raw)
             self.assertEqual(len(data["prerequisites"]["sessions_fp"]["A"]), 8)
 
@@ -192,27 +211,65 @@ class TestStagingEndToEndLocal(unittest.TestCase):
             self.assertFalse(ws1["B_received_A_body"])
             self.assertEqual(ws1["props"]["B"]["content_state"],
                              "LOCKED_NO_PROTECTED_DATA")
+            # Fingerprint NOI DUNG (khong phai hash toan response)
+            self.assertIsNotNone(ws1["content_fingerprints"]["A"]["sha256"])
+            self.assertIsNone(ws1["content_fingerprints"]["B"]["sha256"])
             # Marker synthetic chi xuat hien o noi dung synthetic
             self.assertTrue(ws1["rows"]["A"]["synthetic_marker_present"])
             self.assertFalse(ws1["rows"]["anon"]["synthetic_marker_present"])
 
-            # 4) WS2: 6 object, va co that su bat co needs_review (fix H-2)
+            # 4) WS2: 6 object; mac dinh KHONG co write nao
             objs = data["sections"]["ws2_object_authz"]["objects"]
             self.assertEqual(len(objs), 6)
             self.assertIn("reading-history", objs)
-            rh = objs["reading-history"]
-            self.assertTrue(rh["a_has_session_specific_data"])
-            self.assertTrue(rh["needs_review"])
-            self.assertEqual(rh["status"], "OBSERVED_NEEDS_REVIEW")
-            # Van khong ket luan IDOR o muc tong the
-            self.assertEqual(data["sections"]["ws2_object_authz"]["status"],
-                             sa.UNKNOWN)
+            self.assertFalse(data["sections"]["ws2_object_authz"]
+                             ["write_phase"]["executed"])
+            self.assertEqual(data["writes"], [])
+            self.assertFalse(data["write_authorized"])
 
-            # 5) WS5: co fingerprint de gan build
+            # 5) WS4: A co audio, B khong -> consistent
+            ws4 = data["sections"]["ws4_audio_entitlement"]
+            self.assertTrue(ws4["a_has_audio"])
+            self.assertFalse(ws4["b_has_audio"])
+            self.assertEqual(ws4["audio_state"], "OBSERVED_CONSISTENT")
+
+            # 6) WS5: co fingerprint de gan build
             ws5 = data["sections"]["ws5_matcher"]
             self.assertEqual(len(ws5["probes"]), 9)
             self.assertIn("sitemap", ws5["fingerprint"])
             self.assertIn("config", ws5["fingerprint"])
+
+    def test_end_to_end_mutate_phase_runs_only_when_authorized(self):
+        """--allow-mutate + TTM_MUTATE_AUTHORIZED=1 -> phase 2 chay va ghi
+        nhan write; khong co quyen thi phai khong co write nao."""
+        with TemporaryDirectory() as td:
+            out = Path(td) / "staging_audit.json"
+            rc = self._run(out, mutate=True)
+            self.assertEqual(rc, 0)
+            data = json.loads(out.read_text(encoding="utf-8"))
+            wp = data["sections"]["ws2_object_authz"]["write_phase"]
+            self.assertTrue(wp["executed"])
+            self.assertEqual(wp["records"]["reading-history"]["status"],
+                             "OBSERVED_ISOLATED")
+            self.assertEqual(len(data["writes"]), 2)
+            self.assertTrue(data["write_authorized"])
+
+    def test_end_to_end_mutate_is_refused_without_env_authorization(self):
+        """Co --allow-mutate nhung thieu TTM_MUTATE_AUTHORIZED=1 -> exit 3,
+        KHONG duoc gui request nao."""
+        with TemporaryDirectory() as td:
+            out = Path(td) / "staging_audit.json"
+            argv = ["ttm_staging_audit.py", "--run", "--allow-mutate",
+                    "--out", str(out)]
+            boom = mock.Mock(side_effect=AssertionError("network called!"))
+            with mock.patch.dict(os.environ, self._env(mutate=False), clear=True), \
+                 mock.patch.object(sa.requests.Session, "get", boom), \
+                 mock.patch.object(sa.requests.Session, "post", boom), \
+                 mock.patch.object(sys, "argv", argv):
+                rc = sa.main()
+            self.assertEqual(rc, 3)
+            self.assertFalse(boom.called)
+            self.assertFalse(out.exists())
 
     def test_run_output_never_enters_repo(self):
         """Ghi evidence ra thu muc tam, khong lam dirty repo."""
