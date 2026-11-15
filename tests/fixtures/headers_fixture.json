@@ -1,0 +1,16 @@
+{
+  "public_private_conflict": {
+    "Cache-Control": "public, s-maxage=300, private, no-store, max-age=0",
+    "Vary": "RSC, Accept-Encoding",
+    "cf-cache-status": "DYNAMIC"
+  },
+  "user_scoped_ok": {
+    "Cache-Control": "private, no-store, max-age=0, must-revalidate",
+    "Vary": "RSC, Accept-Encoding",
+    "cf-cache-status": "DYNAMIC"
+  },
+  "cors_safe": {
+    "Access-Control-Allow-Origin": null,
+    "Access-Control-Allow-Credentials": null
+  }
+}

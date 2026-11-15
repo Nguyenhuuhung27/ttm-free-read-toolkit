@@ -1,0 +1,150 @@
+# HANDOFF — trạng thái bàn giao
+
+**Thời điểm:** 2026-11-15 ~18:5x GMT+7
+**Repo:** https://github.com/Nguyenhuuhung27/ttm-free-read-toolkit (public)
+**Branch:** `main` | **Commit khi bắt đầu:** `2415a88`
+**Nhiệm vụ:** `D:\Downloads\ttm_free_read_toolkit_next_audit.md`
+
+---
+
+## 1. Trạng thái hiện tại (exact)
+
+| Mục | Giá trị |
+|---|---|
+| Runtime environment | **Không có staging**. `TTM_COOKIE=0`, `TTM_COOKIE_A=0`, `TTM_COOKIE_B=0` (độ dài env, kiểm tra bằng `${#VAR}`) |
+| Network calls trong đợt này | **0**. Toàn bộ là offline review + synthetic tests |
+| Ứng dụng | Không có source server trong repo; chỉ có client bundle đã capture |
+| Build fingerprint trong evidence | `sitemap_lastmod=2026-11-14T06:31:36.718Z`, `access_gate_enabled="1"` — **đã 1 ngày tuổi** |
+| Confirmed vulnerabilities | **0** (clean result) |
+| Hardening leads | 6 security headers vắng; `Cache-Control` mâu thuẫn/trùng; `Vary` thiếu `Cookie`; `limit` thiếu validate; `.css/.png` trả HTML |
+| Unknown | Entitlement của A đã mở khoá; object-level ownership; cache isolation A/B; logout/expiry/revoke; audio VIP; build 2026-11-15 |
+
+---
+
+## 2. Files changed / created
+
+| File | Loại | Mục đích |
+|---|---|---|
+| `NEXT_AUDIT.md` | mới | Báo cáo: scope, bản đồ kiến trúc, re-verify 6 giả thuyết, phân loại Observed/Inferred/Unknown, prerequisite còn thiếu |
+| `EVIDENCE_INDEX.md` | mới | Index từng file evidence + điều nó chứng minh / không chứng minh; cảnh báo 3 file `download/` |
+| `FINDINGS.md` | **sửa §13** | Cập nhật finding theo format chuẩn (severity rationale, component, prerequisites, steps, expected/actual, evidence, impact, remediation). Không tạo claim trùng §1–12 |
+| `HANDOFF.md` | mới | File này |
+| `audit_classify.py` | mới | Hàm thuần: `content_state`, `cache_isolation_state`, `classify`, `redact`. Encode brief rule 6 (không nhận HTTP status) |
+| `tests/test_audit_offline.py` | mới | 37 unittest: RSC parser (9), channels (5), classification/redaction (7), cache classifier (5), evidence integrity (11) |
+| `tests/make_fixtures.py` | mới | Sinh lại fixture deterministic (tránh bash expand `$1b` → `b`) |
+| `tests/fixtures/README.md` | mới | Mô tả 7 synthetic fixture |
+| `tests/fixtures/free_chapter.html`, `locked_chapter.html` | mới | HTML giả mở / khoá |
+| `tests/fixtures/free_chapter.rsc`, `locked_chapter.rsc` | mới | RSC thô giả `$15` / `content:""` |
+| `tests/fixtures/toc.html`, `headers_fixture.json`, `sessions_fixture.json` | mới | TOC, header cache, 4 kịch bản A/B |
+| `.gitattributes` | mới | Fixture `.rsc`/`.html` chứa **CRLF cố ý** để test parser → đánh dấu `-text -whitespace` để git không normalize, không báo trailing whitespace, và giữ deterministic khi checkout ở máy khác |
+
+**Không sửa:** `ttm_recon.py`, `ttm_grab.py`, `ttm_passive_check.py`,
+`ttm_control_audit.py`, `ttm_entitlement_audit.py`, `CLAUDE.md`, `CONTROL_AUDIT.md`,
+`ENTITLEMENT_AUDIT.md`, `TESTPLAN.md`, toàn bộ `recon/*`, toàn bộ `download/*`.
+→ Giữ nguyên working behavior và evidence gốc đúng yêu cầu brief rule 5.
+
+---
+
+## 3. Commands run & exit codes
+
+| # | Command | Exit | Kết quả |
+|---|---|---|---|
+| 1 | `git branch --show-current && git rev-parse HEAD && git log --oneline -6 && git ls-files` | 0 | `main`, `2415a88f…`, 4 commit, 52 tracked files |
+| 2 | `python --version` | 0 | 3.13.14 |
+| 3 | `python -m pytest --version` | 1 | `No module named pytest` → **không cài**, dùng stdlib `unittest` |
+| 4 | `python -c "...đọc 5 evidence JSON..."` | 0 | Kiểm chứng số liệu: 51/51, 19 probe, 11 API, 8 error case, 10 dot-probe |
+| 5 | `python -c "...trích symbol bundle @offset..."` | 0 | Bản đồ client: `useSession @3175`, `locked @27900`, `POST …/unlock @24900`, `audioUrl @4257` |
+| 6 | `git grep -IinE '<secret patterns>'` | 1* | 0 match (grep trả 1 khi không có match — expected) |
+| 7 | `python -m unittest discover -s tests -v` (lần 1) | **1** | 4 FAIL: 3 do bash expand `$1b`/`$15`, 1 do assertion `.html/x` quá chặt |
+| 8 | `python tests/make_fixtures.py` | 0 | 8 file, đã sửa lỗi `$` |
+| 9 | `python -m unittest discover -s tests -v` (lần 2) | **1** | 1 FAIL: lệch 1 ký tự do RSC fixture thiếu newline cuối chunk |
+| 10 | Sửa generator + `python -m unittest discover -s tests -v` (lần 3) | **0** | `Ran 37 tests … OK` |
+| 11 | `python -m compileall -q <8 file .py>` | 0 | Không lỗi cú pháp |
+| 12 | Determinism check: hash 8 fixture → regenerate → hash lại | 0 | `identical 8 files` |
+| 13 | Secret scan trên tracked files (`csrf-token=`, `session-token=`, `Bearer`, `gh[pousr]_`, `TTM_COOKIE=`, `Cookie:`) | 0 matches | Clean |
+| 14 | `git diff --cached --check` (trước `.gitattributes`) | **2** | 5 cảnh báo "trailing whitespace" do CRLF cố ý trong `free_chapter.rsc` |
+| 15 | Thêm `.gitattributes` (`-text -whitespace`) → `git add --renormalize .` → `git diff --cached --check` | **0** | Sạch |
+| 16 | `python -m unittest discover -s tests` sau renormalize | **0** | 37/37 OK — fixture không bị đổi byte |
+
+**Lý do 2 lần test fail ban đầu (đã fix, ghi lại để không lặp):**
+- Dùng `python -c "...$1b..."` trong bash → shell expand `$1` thành rỗng. Chuyển
+  sang `tests/make_fixtures.py` (file, không inline).
+- `.html/x` trả **404** (route không tồn tại) nhưng vẫn không bị gate → assertion
+  "mọi case không gate phải 200" là sai; sửa thành 8×200 + 1×404.
+- Chunk RSC thật kết thúc bằng newline; fixture thiếu → body lệch 1 ký tự.
+
+---
+
+## 4. Test results
+
+```
+Ran 37 tests in 0.079s
+OK
+```
+- `TestRSCParser` 9/9 — flight stream, props, TOC, chunk newline, prefix, module-ref, UTF-8
+- `TestInspectChannels` 5/5 — free/locked HTML, free/locked RSC, HTML=RSC cùng độ dài
+- `TestClassificationRules` 7/7 — **status code không phải input của classifier**, redaction
+- `TestCacheIsolationClassifier` 5/5 — không có A/B → `UNKNOWN`, `Vary` không chứng minh leak
+- `TestEvidenceIntegrity` 11/11 — re-compute 51/51, 48 khoá, 19 probe, 11 API, 10 dot-probe, 8 error, 3× DYNAMIC, `sessions=null`
+
+**Build/lint:** repo không có `package.json`, `pyproject.toml`, `requirements.txt`,
+Makefile hay CI config → không có build/lint command chính thức. Thay bằng
+`compileall` (exit 0). Không cài thêm dependency mới (dùng `unittest` stdlib;
+`requests`/`bs4`/`lxml` đã có sẵn từ các script cũ, tests chỉ import chứ không gọi).
+
+---
+
+## 5. Runtime verification
+
+> **"not verified at runtime"** cho Workstream 2, 3, 4 (phần staging), 5.
+
+Không có request nào tới ứng dụng trong đợt audit này. Mọi kết luận runtime trong
+`NEXT_AUDIT.md` / `FINDINGS.md` §13 đều **trích lại từ evidence anonymous đã capture
+ngày 2026-11-14** (commit `2415a88`), không phải quan sát mới.
+
+**Prerequisite còn thiếu, chính xác:**
+1. Staging environment được ủy quyền (base URL), tách khỏi production.
+2. Hai tài khoản test độc lập A (có entitlement) / B (không có), cung cấp qua
+   `TTM_COOKIE_A` / `TTM_COOKIE_B` — không commit giá trị.
+3. Một **test chapter synthetic** (hoặc được phê duyệt rõ): `slug`, `chapterNumber`,
+   `chapterId`. Không dùng chương thật.
+4. Xác nhận scope cho phép mutate nếu chạy đủ Workstream 3
+   (`POST /api/chapters/<id>/unlock`, `/api/reading-history`, comments).
+
+Thiếu (1)–(3) → `--sessions` vô nghĩa: nếu A vẫn `locked:true`, classifier trả
+`UNKNOWN_A_NOT_ENTITLED` (đã có unit test).
+
+---
+
+## 6. Next verifiable step
+
+```bash
+# Sau khi có staging + 2 tài khoản + test chapter synthetic:
+export TTM_COOKIE_A='<session A>'   # KHÔNG commit
+export TTM_COOKIE_B='<session B>'   # KHÔNG commit
+python ttm_entitlement_audit.py --sessions
+python -m unittest discover -s tests -v
+```
+
+Đọc `recon/entitlement_audit.json` → `sections.cache.sessions`:
+- `A.locked == false && A.body_chars > 200` → phép thử hợp lệ.
+- `B_received_A_content == true` → **mới** được kết luận leak (kèm `body_sha`).
+- `false` + B `locked:true, body=0` → cách ly đúng.
+- Kiểm tra `A_again` / `anon` để phát hiện staleness; lưu kèm fingerprint build.
+
+Sau đó: Workstream 3 với **non-content test objects** do chính A/B tạo; Workstream 4
+với cấu hình CDN thật (nếu chủ sở hữu cung cấp); Workstream 5 với synthetic audio
+asset; và re-verify H1 trên build hiện tại.
+
+---
+
+## 7. Rủi ro / lưu ý cho người nhận
+
+- Repo đang **public**, chứa 3 file `download/.../*.md` là **full-text chương miễn phí
+  thật** của production (từ commit `2959fa1`). Không đọc/sửa/xoá trong đợt này theo
+  brief rule 5. Chủ repo nên cân nhắc gỡ hoặc thay bằng synthetic fixture.
+- Evidence `recon/*.html` cũng chứa HTML production thật (đã cắt 4 000 ký tự ở
+  `recon/audit/`). Không có secret, nhưng là dữ liệu production.
+- `NEXT_AUDIT.md` §2 dùng **byte offset** thay vì line number vì bundle client đã
+  minify thành 1 dòng; đây không phải "exact source line" của server code.
+- Mọi "code path" server là **Inferred**. Không bịa tên file/function server.

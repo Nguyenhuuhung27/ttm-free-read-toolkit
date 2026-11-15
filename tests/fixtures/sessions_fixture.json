@@ -1,0 +1,45 @@
+{
+  "no_sessions": [],
+  "a_not_entitled": [
+    {
+      "label": "A",
+      "locked": true,
+      "body_chars": 0,
+      "body_sha": "aaa"
+    },
+    {
+      "label": "B",
+      "locked": true,
+      "body_chars": 0,
+      "body_sha": "aaa"
+    }
+  ],
+  "isolated": [
+    {
+      "label": "A",
+      "locked": false,
+      "body_chars": 38103,
+      "body_sha": "aaa"
+    },
+    {
+      "label": "B",
+      "locked": true,
+      "body_chars": 0,
+      "body_sha": "bbb"
+    }
+  ],
+  "leak": [
+    {
+      "label": "A",
+      "locked": false,
+      "body_chars": 38103,
+      "body_sha": "aaa"
+    },
+    {
+      "label": "B",
+      "locked": false,
+      "body_chars": 38103,
+      "body_sha": "aaa"
+    }
+  ]
+}

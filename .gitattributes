@@ -1,0 +1,8 @@
+# Fixture la DU LIEU THO: chua CRLF that co y de test RSC parser.
+# Khong de git normalize newline (se lam sai do dai body), va khong
+# ap dung whitespace check vi `\r` o cuoi dong la mot phan cua fixture.
+tests/fixtures/*.rsc  -text -whitespace
+tests/fixtures/*.html -text -whitespace
+
+# Cac file con lai: de git xu ly nhu binh thuong.
+* text=auto

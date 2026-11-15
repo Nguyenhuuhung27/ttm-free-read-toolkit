@@ -177,3 +177,86 @@ trên 3 nội dung user nêu.
   `Vary` thiếu `Cookie`, `limit` thiếu validate (500 / không clamp) → **hardening**,
   chưa phân loại thành lỗ hổng khai thác được.
 
+---
+
+## 13. Cập nhật 2026-11-15 — re-verification (xem `NEXT_AUDIT.md`)
+
+> Phần này **cập nhật** các mục §1–12, không tạo claim trùng. Commit gốc `2415a88`.
+> Re-verify bằng offline tests (`python -m unittest discover -s tests -v` → 37/37 OK)
+> trên evidence JSON có sẵn. **Không gọi network**, không có staging, không có
+> tài khoản A/B. Toàn bộ evidence vẫn là anonymous production 2026-11-14.
+
+### 13.0 Kết luận tổng
+
+**Không có lỗ hổng nào được chứng minh** ở 3 nhóm mục tiêu: server-side
+authorization, entitlement isolation, cache isolation. Clean result là kết quả hợp
+lệ. Các mục dưới đây được viết theo đúng cấu trúc yêu cầu để tránh bị đọc nhầm
+thành finding.
+
+### F-13.1 — Middleware access-gate bypass bằng path có dấu chấm
+
+| Trường | Giá trị |
+|---|---|
+| **Title / Severity rationale** | Access-gate (presentation/middleware layer) bị bỏ qua bởi path có extension. **Severity: Informational / hardening — KHÔNG phải vulnerability**. Lý do: theo brief rule 6, middleware-only bypass + response chỉ chứa nội dung công khai **không đủ** để xếp lỗ hổng. Không có leo thang đặc quyền, không có dữ liệu được bảo vệ. |
+| **Affected component / code location** | L1 access gate. **Không có source trong repo**; vị trí xác định được là response `307` với `Location: /khong-co-pass?next=…` (`recon/control_audit.json` → `sections.gate.rows`, `gate_response_headers`). Matcher cụ thể là **Inferred**. Client symbol liên quan: `recon/page-2936fb800ce950f1.js` (`/truyen/[slug]/doc/[chapter]`). |
+| **Prerequisites / threat boundary** | Attacker không cần credential. Boundary: chỉ với **anonymous / nội dung công khai**. Không áp dụng cho chương `locked:true`, audio VIP, hay dữ liệu user khác. |
+| **Reproducible steps (authorized env)** | Trên staging được ủy quyền: `GET /truyen/<test-slug>/doc/<N>` → 307; `GET /truyen/<test-slug>/doc/<N>.html` → 200. Chạy 10 biến thể đuôi từ `ttm_control_audit.py::audit_gate` (1 luồng, 2s/request). |
+| **Expected vs actual** | Expected: gate chặn mọi path. Actual (2026-11-14): 1/10 path bị gate, 8× 200, 1× 404 (`.html/x`). Chương khoá trong các response 200 vẫn `content:""` / `body=0`. |
+| **Evidence refs** | `recon/control_audit.json` · `sections.gate.dot_suffix_probe`; `CONTROL_AUDIT.md` §1; test `test_gate_dot_suffix_probe_has_10_rows`; `EVIDENCE_INDEX.md` §1 |
+| **Impact / limitations** | Ảnh hưởng thật: truy cập **nội dung công khai** dù gate bật. **Không** đọc được nội dung VIP. Evidence đã 1 ngày tuổi; deployment từng đổi 3 lần/phiên → **chưa re-verify trên build 2026-11-15**. |
+| **Remediation** | Sửa matcher để không loại trừ path có dấu chấm tuỳ ý (hoặc chặn rõ ràng ở route/page thay vì chỉ middleware); thêm regression test cho danh sách path được bảo vệ. |
+
+### F-13.2 — Server-side entitlement enforcement (kết quả âm tính)
+
+| Trường | Giá trị |
+|---|---|
+| **Title / Severity** | Không phát hiện bypass entitlement. **Severity: none (clean result)**. 19/19 thử tự gán quyền thất bại; 51/51 chương nhất quán. |
+| **Component / location** | Server component của `/truyen/[slug]/doc/[chapter]` — **Inferred** từ RSC props `locked`, `content`, `remainingDailyUnlocks` (`recon/control_audit.json` → `sections.content.chapters.*.props`). Logic client nhận `locked:Z` tại `recon/page-2936fb800ce950f1.js` `@27900`; render `content` tại `@31350`. Không có source server để trích exact line. |
+| **Prerequisites / boundary** | **Anonymous**. Chưa có tài khoản A đã mở khoá → không thể khẳng định hành vi với entitlement thật. Không giả mạo entitlement (đúng brief). |
+| **Steps (authorized env)** | `python ttm_entitlement_audit.py --sweep` trên staging; với A/B: `TTM_COOKIE_A=… TTM_COOKIE_B=… python ttm_entitlement_audit.py --sessions`. |
+| **Expected vs actual** | Expected: chương khoá không trả body ở mọi kênh. Actual: HTML/RSC/prefetch/TOC/API đều `body=0`, `dom=0`, không `audioUrl`; 19 probe (10 query + 6 header + 3 cookie) đều `locked:true`. |
+| **Evidence refs** | `recon/entitlement_sweep.json` → `sections.server_authorization`, `sections.content_delivery`; tests `test_19_entitlement_probes_all_locked`, `test_sweep_51_chapters_all_consistent`; `ENTITLEMENT_AUDIT.md` §Câu 1–2 |
+| **Impact / limitations** | Không có lộ dữ liệu được bảo vệ. **Unknown**: entitlement được kiểm tra trước hay sau truy vấn DB (không có source/timing); hành vi sau unlock thật; audio cho VIP. |
+| **Remediation** | Không cần sửa. Khuyến nghị giữ server-side check và thêm test A/B trên staging để chốt phần còn lại. |
+
+### F-13.3 — Cache isolation (chưa xác lập)
+
+| Trường | Giá trị |
+|---|---|
+| **Title / Severity** | Chưa chứng minh được rò rỉ cache giữa phiên. **Severity: n/a — Unknown**. Header thiếu `Vary: Cookie` là **review lead**, không phải proof (đúng brief Workstream 4). |
+| **Component / location** | Header `Cache-Control`, `Vary`, `cf-cache-status` — `recon/passive_check.json` (`api`, `cache`), `recon/control_audit.json` → `sections.config.cache`, `recon/entitlement_sweep.json` → `sections.cache`. **Không có cấu hình CDN trong repo** → không khẳng định tầng cache nào tồn tại. Framework-level route cache: **Unknown**. |
+| **Prerequisites / boundary** | Cần 2 phiên A/B độc lập, A có entitlement tới **test chapter synthetic**, và staging có cấu hình cache rõ ràng. Hiện `TTM_COOKIE_A/B` rỗng → `sections.cache.sessions = null`. |
+| **Steps (authorized env)** | A→B→A→anon trên cùng URL, log `status/body_sha/locked/body_chars`, chỉ log hash cookie. Đọc `B_received_A_content`. |
+| **Expected vs actual** | Expected: B không nhận body của A. Actual (anonymous): 3× `/api/config` → `DYNAMIC`, hash `76eac9234a`, không `Age`/`ETag`; 7 cache-key variant không lẫn dữ liệu; 5× RSC↔HTML tách đúng Content-Type. **Chưa có phép thử A/B thật.** |
+| **Evidence refs** | `recon/entitlement_sweep.json` → `sections.cache`; `CONTROL_AUDIT.md` §5; tests `test_no_real_sessions_recorded`, `test_cache_no_hit_in_evidence`, `TestCacheIsolationClassifier`; `NEXT_AUDIT.md` §5 |
+| **Impact / limitations** | Không có bằng chứng dữ liệu lọt sang phiên khác. Các lead: `/api/config` có `public, s-maxage=300` lẫn `private, no-store`; 5 route set header trùng; `Vary` thiếu `Cookie`; `.css/.png` trả HTML với `cf=BYPASS`. Tất cả **chưa phải finding khai thác được**. |
+| **Remediation (hardening)** | Gộp `Cache-Control` trùng, bỏ `public/s-maxage` trên route có thể chứa dữ liệu user, thêm `Vary: Cookie` cho route user-scoped, đảm bảo `private, no-store` tuyệt đối cho response chứa nội dung đã mở khoá. |
+
+### F-13.4 — F2 Information Disclosure (đã retest, đã ẩn)
+
+| Trường | Giá trị |
+|---|---|
+| **Title / Severity** | Framework version / PHP / internal path / stack không còn tái hiện. **Severity: none (remediated / không tái hiện)**. Còn lại fingerprint công khai → hardening nhẹ. |
+| **Component / location** | Error responses 400/404/405/500 + header `Server`, `X-Powered-By`. Evidence: `recon/audit/error_*.txt`; `recon/control_audit.json` → `sections.errors.cases[].patterns_found`. |
+| **Prerequisites / boundary** | Anonymous, response lỗi tự nhiên. **Không hề request file cấu hình/bí mật**. Mô tả gốc F2 không có trong repo → kết luận dựa trên 3 nội dung user nêu. |
+| **Steps (authorized env)** | `python ttm_control_audit.py` (GET/OPTIONS only), đọc 8 case. |
+| **Expected vs actual** | Expected: không lộ version/PHP/path/stack/secret. Actual: 0 match cho `php_version`, `framework_version`, `internal_fs_path`, `stack_trace`, `secret_like`, `env_var`, `sql`; 500 → `{"error":"Internal error"}`; 405 rỗng; 400 generic NextAuth. `?next=` chỉ self-reflect, external/`javascript:` bị chuẩn hoá về `/`. |
+| **Evidence refs** | `CONTROL_AUDIT.md` §4; `recon/audit/error_*.txt`; test `test_f2_error_responses_hide_sensitive_patterns` |
+| **Impact / limitations** | Chỉ còn `Server: cloudflare`, `X-Powered-By: Next.js` (không số phiên bản), tên chunk build công khai. Build hiện tại (2026-11-15) chưa retest. |
+| **Remediation** | Tuỳ chọn: bỏ `X-Powered-By`, thống nhất error page, validate `limit` (500/không clamp). Không phải info disclosure. |
+
+### 13.5 Bảng trạng thái 6 giả thuyết cũ
+
+| # | Giả thuyết | Trạng thái | Ghi chú |
+|---|---|---|---|
+| H1 | Extension bypass gate | **Observed** (anonymous, 2026-11-14) | Không re-verify build hiện tại; không phải vulnerability |
+| H2 | Server entitlement vẫn hiệu lực | **Observed** (anonymous) / **Unknown** (A có entitlement) | 19/19 + 51/51 |
+| H3 | Body khoá vắng ở HTML/RSC/prefetch | **Observed** | 48/48 `body=0`, 6 kênh |
+| H4 | Anonymous không nhận `audioUrl` | **Observed** (anonymous) / **Unknown** (VIP) | 0/11 API |
+| H5 | Cache leak chưa chứng minh | **Vẫn đúng — chưa chứng minh** | `sessions = null` |
+| H6 | 48/51 khoá, 19/19 thất bại | **Observed**, khớp chính xác | Offline re-computation |
+
+**Không giả thuyết nào bị contradicted; không giả thuyết nào được nâng thành
+confirmed vulnerability.** Chi tiết command/test/environment: `NEXT_AUDIT.md` §3,
+`HANDOFF.md`.
+
