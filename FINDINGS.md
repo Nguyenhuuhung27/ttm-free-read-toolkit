@@ -359,7 +359,13 @@ Hai lỗi trong logic sinh evidence của `ttm_staging_audit.py` — **đây là
 | # | Vấn đề | Hệ quả nếu không sửa | Cách sửa |
 |---|---|---|---|
 | H-1 | WS2 **không probe `/api/reading-history`** dù ưu tiên 2 nêu rõ "reading history" (client chỉ lộ call site POST `@27459`, GET list nằm ở bundle chưa capture) | Object đầu tiên trong ưu tiên 2 không được kiểm tra → báo cáo thiếu phạm vi | Thêm `GET /api/reading-history` vào WS2 (GET-only, không mutate). Ưu tiên 2 giờ phủ **6 endpoint** thay vì 5 |
-| H-2 | Cờ `needs_review` viết sai: `a_bytes != b_bytes and b_hash == a_hash` — hai điều kiện **loại trừ nhau** (hash bằng nhau ⇒ byte bằng nhau), nên cờ **không bao giờ bật** | Cross-session data leak thật sẽ **không** được gắn cờ review; âm thầm bỏ sót | Tách thành `a_has_session_specific_data` (A khác anon) và `b_got_a_data` (B nhận đúng body A). `needs_review` chỉ bật khi **cả hai** đúng. A/B/anon cùng rồng ⇒ `UNKNOWN_NO_SESSION_SPECIFIC_DATA`, không gắn cờ |
+| H-2 | Cờ `needs_review` viết sai: `a_bytes != b_bytes and b_hash == a_hash` — hai điều kiện **loại trừ nhau** (hash bằng nhau ⇒ byte bằng nhau), nên cờ **không bao giờ bật** | Cross-session data leak thật sẽ **không** được gắn cờ review; âm thầm bỏ sót | Tách thành `a_has_session_specific_data` (A khác anon) và `b_got_a_data` (B nhận đúng body A). `needs_review` chỉ bật khi **cả hai** đúng. A/B/anon cùng rỗng ⇒ `UNKNOWN_NO_SESSION_SPECIFIC_DATA`, không gắn cờ |
+| H-3 | Đường chạy thật `main()` → `Harness` → WS1–WS5 → `flush()` **chưa từng được chạy trọn vẹn** — mọi test cũ chỉ gọi từng hàm riêng lẻ với `mock` | Lỗi ở `main()` (sai key env, sai đường dẫn `--out`, lỗi serialize JSON, thiếu `cfg`) chỉ lộ ra **đúng lúc** người dùng có staging thật → hỏng cả đợt đo | Thêm `tests/test_staging_e2e_local.py`: mock server `http.server` trên `127.0.0.1:0` (port tự chọn, **không** domain ngoài), chạy `--run` thật với `--out` trong thư mục tạm. Kết quả: **42 rows**, evidence JSON đầy đủ 5 section, `confirmed_vulnerabilities=[]`, **giá trị cookie không xuất hiện** trong file, `needs_review` bắt đúng case cross-session, và **không** ghi file nào vào `recon/` |
+
+**Bổ sung H-3 — vì sao dùng `127.0.0.1` là hợp lệ:** `staging_host_ok()` đã cho phép
+`localhost` / `127.0.0.1` với scheme `http` từ trước (điều kiện bắt buộc cho môi
+trường dev nội bộ). Vì vậy test end-to-end chạy **đúng con đường** mà lệnh thật sẽ
+đi, mà vẫn không có một byte nào ra ngoài máy.
 
 **Không thay đổi kết luận nào:** vẫn **0 confirmed vulnerability**. Hai sửa đổi này chỉ làm
 harness **nhạy hơn** — mọi verdict mới vẫn là *review lead*, không phải kết luận IDOR,
@@ -368,4 +374,4 @@ vẫn phải qua `audit_classify` và vẫn yêu cầu A có entitlement thật.
 **Test mới (2):** `test_ws2_flags_cross_session_data_for_reading_history` (A có dữ
 liệu riêng, B nhận cùng body A → `needs_review=True`) và
 `test_ws2_identical_empty_records_are_not_flagged` (cả hai rỗng → không gắn cờ).
-Suite: **58/58 OK** (exit 0), trước đợt này 56/56.
+Suite: **60/60 OK** (exit 0), trước đợt này 58/58.

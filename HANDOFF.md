@@ -23,8 +23,8 @@
 | `TEST_CHAPTER_ID` / `TEST_CHAPTER_SLUG` / `TTM_TEST_SLUG` | đều độ dài 0 |
 | File cấu hình deployment trong repo | **0** (`.env*`, `next.config*`, `middleware*`, `vercel.json`, `wrangler*`, `docker-compose*`) |
 | Confirmed vulnerabilities | **0** |
-| 5 ưu tiên | **not verified at runtime**; đã có harness + 21 unit test mock |
-| Test suite | **58/58 OK** (37 cũ + 21 mới), exit 0 |
+| 5 ưu tiên | **not verified at runtime**; đã có harness + 23 unit test (21 mock + 2 end-to-end local) |
+| Test suite | **60/60 OK** (37 cũ + 21 harness + 2 e2e), exit 0 |
 
 ### 0.2 Files đợt này
 
@@ -32,6 +32,7 @@
 |---|---|---|
 | `ttm_staging_audit.py` | mới | Harness fail-closed cho 5 ưu tiên: WS1 A/B isolation, WS2 object authz (**6 endpoint**), WS3 cache isolation, WS4 audio entitlement, WS5 matcher + fingerprint |
 | `tests/test_staging_harness.py` | mới | 21 unit test mock (gating 8, workstream 11, plan 2) |
+| `tests/test_staging_e2e_local.py` | mới | 2 test end-to-end: `--run` thật trên mock server `127.0.0.1:0`, evidence ra thư mục tạm |
 | `recon/staging_plan.json` | mới | Bằng chứng trạng thái: `ready=false`, `missing=7`, không chứa secret |
 | `FINDINGS.md` | sửa §14 | Source-level analysis + 5 finding đều `Unknown`, không tạo claim trùng |
 | `EVIDENCE_INDEX.md` | sửa | Thêm mục 4b, phân biệt `staging_plan.json` với `staging_audit.json` (chưa tồn tại) |
@@ -53,6 +54,15 @@
   cờ **không bao giờ bật**. Nay tách `a_has_session_specific_data` (A khác anon)
   và `b_got_a_data` (B nhận đúng body A); cờ chỉ bật khi cả hai đúng.
 - +2 unit test chống tái phát → suite **58/58**.
+
+**Bổ sung vòng 20:1x — end-to-end (H-3, xem `FINDINGS.md` §14.6):**
+- `tests/test_staging_e2e_local.py`: chạy `--run` thật (`main()` → `Harness` →
+  WS1–WS5 → `flush()`) trên mock server `http.server` `127.0.0.1:0` (port tự
+  chọn, không domain ngoài), `--out` trỏ thư mục tạm.
+- Kết quả: **42 rows**, evidence JSON đủ 5 section, `confirmed_vulnerabilities=[]`,
+  **giá trị cookie không xuất hiện** trong file, `needs_review` bắt đúng case
+  cross-session (fix H-2 được kiểm chứng end-to-end), **không** ghi file vào `recon/`.
+- Suite: **60/60**.
 
 **Không sửa:** `ttm_recon.py`, `ttm_grab.py`, `ttm_passive_check.py`,
 `ttm_control_audit.py`, `ttm_entitlement_audit.py`, `audit_classify.py`, `NEXT_AUDIT.md`,
@@ -78,7 +88,9 @@ toàn bộ `recon/*` cũ, toàn bộ `download/*`, `tests/test_audit_offline.py`
 | 12 | `python -m unittest discover -s tests -v` (lần 3) | **0** | `Ran 55 tests … OK` |
 | 12b | Sau khi sửa side-effect (lần 4, có thêm 1 test) | **0** | `Ran 56 tests … OK` |
 | 12c | Vòng 20:0x: bổ sung WS2 reading-history + sửa cờ `needs_review` (+2 test) | **0** | `Ran 58 tests … OK` |
+| 12d | Vòng 20:1x: thêm end-to-end local (+2 test) | **0** | `Ran 60 tests … OK` |
 | 13 | `python -m unittest tests.test_audit_offline` | 0 | `Ran 37 tests … OK` |
+| 13b | `python -m unittest tests.test_staging_e2e_local` | 0 | `Ran 2 tests … OK` (42 rows, evidence ra thư mục tạm) |
 | 14 | `python -m unittest tests.test_staging_harness` | 0 | `Ran 21 tests … OK` (trước: 19) |
 | 15 | `python -m compileall -q ttm_staging_audit.py tests/test_staging_harness.py` | 0 | Không lỗi |
 | 16 | `git diff --check` / secret scan | 0 / 0 matches | Sạch |
@@ -93,13 +105,14 @@ cụm phủ định thay vì cấm từ "vulnerability".
 ### 0.4 Test results
 
 ```
-Ran 58 tests in 0.135s
+Ran 60 tests in 1.463s
 OK
 ```
 - `tests/test_audit_offline.py` **37/37** (không sửa, chạy 1 lần trong suite đầy đủ)
 - `tests/test_staging_harness.py` **21/21** — prerequisite fail-closed (8), 5
   workstream với mock (11), plan không lộ secret (1), plan không ghi file (1),
   chống tái phát lỗi WS2 (2)
+- `tests/test_staging_e2e_local.py` **2/2** — `--run` end-to-end trên `127.0.0.1`
 
 Repo không có `pyproject.toml` / `package.json` / Makefile / CI → không có
 build/lint chính thức; dùng `compileall`. Không cài dependency mới.
@@ -277,10 +290,15 @@ Thiếu (1)–(3) → `--sessions` vô nghĩa: nếu A vẫn `locked:true`, clas
 ## 6. Next verifiable step
 
 ```bash
+# BƯỚC 0 — pre-flight, KHÔNG cần staging, KHÔNG cần cookie:
+python -m unittest tests.test_staging_e2e_local -v   # exit 0, 42 rows, evidence ra thư mục tạm
+# -> xác nhận đường chạy thật của harness còn nguyên trước khi dùng nó
+
 # Sau khi có staging + 2 tài khoản + test chapter synthetic:
 export TTM_COOKIE_A='<session A>'   # KHÔNG commit
 export TTM_COOKIE_B='<session B>'   # KHÔNG commit
 python ttm_entitlement_audit.py --sessions
+python ttm_staging_audit.py --run --out recon/staging_audit.json
 python -m unittest discover -s tests -v
 ```
 
@@ -289,6 +307,12 @@ python -m unittest discover -s tests -v
 - `B_received_A_content == true` → **mới** được kết luận leak (kèm `body_sha`).
 - `false` + B `locked:true, body=0` → cách ly đúng.
 - Kiểm tra `A_again` / `anon` để phát hiện staleness; lưu kèm fingerprint build.
+
+Đọc `recon/staging_audit.json` → `sections.ws2_object_authz.objects`:
+- `needs_review == true` (chỉ khi `a_has_session_specific_data` **và** `b_equals_a`)
+  → có dấu hiệu cross-session; **chưa** phải kết luận IDOR — phải đối chiếu
+  record mà A/B đã tạo.
+- `UNKNOWN_NO_SESSION_SPECIFIC_DATA` → cả hai rỗng, chưa có gì để kết luận.
 
 Sau đó: Workstream 3 với **non-content test objects** do chính A/B tạo; Workstream 4
 với cấu hình CDN thật (nếu chủ sở hữu cung cấp); Workstream 5 với synthetic audio
