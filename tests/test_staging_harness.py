@@ -251,13 +251,22 @@ class TestWorkstreamsWithMocks(unittest.TestCase):
         self.assertNotIn("confirmed vulnerability", out["note"].lower())
 
     def test_plan_writes_no_secrets_and_refuses_run(self):
+        # Capture output thay vi ghi vao repo: unit test khong duoc co side effect
+        # (truoc day lam recon/staging_plan.json bi dirty sau moi lan chay).
+        captured = {}
+
+        def fake_write(self, text, *a, **kw):
+            captured["text"] = text
+            return len(text)
+
         with mock.patch.dict(os.environ, {}, clear=True), \
+             mock.patch.object(sa.Path, "write_text", new=fake_write), \
              mock.patch.object(sys, "argv", ["ttm_staging_audit.py", "--plan"]):
             rc = sa.main()
         self.assertEqual(rc, 3)
-        plan = json.loads((ROOT / "recon/staging_plan.json").read_text(encoding="utf-8"))
+        plan = json.loads(captured["text"])
         self.assertFalse(plan["prerequisites"]["ready"])
-        self.assertNotIn("supersecret", json.dumps(plan))
+        self.assertNotIn("supersecret", captured["text"])
 
 
 if __name__ == "__main__":
