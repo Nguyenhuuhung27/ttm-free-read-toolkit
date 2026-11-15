@@ -378,6 +378,8 @@ def plan_text(pr: dict) -> str:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--plan", action="store_true", help="in ke hoach, khong network")
+    ap.add_argument("--write-plan", action="store_true",
+                    help="ghi lai recon/staging_plan.json (chi khi muon refresh evidence)")
     ap.add_argument("--run", action="store_true", help="chay that tren staging")
     ap.add_argument("--allow-mutate", action="store_true",
                     help="cho phep POST tao test records (can TTM_MUTATE_AUTHORIZED=1)")
@@ -387,10 +389,14 @@ def main() -> int:
     pr = prerequisites()
     if args.plan or not args.run:
         print(plan_text(pr))
-        Path("recon/staging_plan.json").write_text(
-            json.dumps({"at": datetime.now(timezone.utc).isoformat(),
-                        "prerequisites": pr, "plan": plan_text(pr)},
-                       ensure_ascii=False, indent=2), encoding="utf-8")
+        # Mac dinh KHONG ghi de evidence da commit (co timestamp -> se lam
+        # working tree dirty moi lan chay). Dung --write-plan khi can refresh.
+        if args.write_plan:
+            Path("recon/staging_plan.json").write_text(
+                json.dumps({"at": datetime.now(timezone.utc).isoformat(),
+                            "prerequisites": pr, "plan": plan_text(pr)},
+                           ensure_ascii=False, indent=2), encoding="utf-8")
+            print("-> recon/staging_plan.json (refreshed)")
         return 0 if pr["ready"] else 3
 
     if not pr["ready"]:

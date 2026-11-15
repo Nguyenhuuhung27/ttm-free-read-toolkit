@@ -261,12 +261,22 @@ class TestWorkstreamsWithMocks(unittest.TestCase):
 
         with mock.patch.dict(os.environ, {}, clear=True), \
              mock.patch.object(sa.Path, "write_text", new=fake_write), \
-             mock.patch.object(sys, "argv", ["ttm_staging_audit.py", "--plan"]):
+             mock.patch.object(sys, "argv", ["ttm_staging_audit.py",
+                                             "--plan", "--write-plan"]):
             rc = sa.main()
         self.assertEqual(rc, 3)
         plan = json.loads(captured["text"])
         self.assertFalse(plan["prerequisites"]["ready"])
         self.assertNotIn("supersecret", captured["text"])
+
+    def test_plain_plan_does_not_touch_evidence_file(self):
+        """`--plan` mac dinh chi in ra stdout, khong ghi de file da commit."""
+        with mock.patch.dict(os.environ, {}, clear=True), \
+             mock.patch.object(sa.Path, "write_text") as w, \
+             mock.patch.object(sys, "argv", ["ttm_staging_audit.py", "--plan"]):
+            rc = sa.main()
+        self.assertEqual(rc, 3)
+        w.assert_not_called()
 
 
 if __name__ == "__main__":

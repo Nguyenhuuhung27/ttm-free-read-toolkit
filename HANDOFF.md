@@ -24,7 +24,7 @@
 | File cấu hình deployment trong repo | **0** (`.env*`, `next.config*`, `middleware*`, `vercel.json`, `wrangler*`, `docker-compose*`) |
 | Confirmed vulnerabilities | **0** |
 | 5 ưu tiên | **not verified at runtime**; đã có harness + 18 unit test mock |
-| Test suite | **55/55 OK** (37 cũ + 18 mới), exit 0 |
+| Test suite | **56/56 OK** (37 cũ + 19 mới), exit 0 |
 
 ### 0.2 Files đợt này
 
@@ -36,6 +36,13 @@
 | `FINDINGS.md` | sửa §14 | Source-level analysis + 5 finding đều `Unknown`, không tạo claim trùng |
 | `EVIDENCE_INDEX.md` | sửa | Thêm mục 4b, phân biệt `staging_plan.json` với `staging_audit.json` (chưa tồn tại) |
 | `HANDOFF.md` | sửa | Thêm mục 0 này |
+
+**Chỉnh sửa nhỏ sau commit `9fd41c1` (commit `e9d3ced` + đợt này):**
+- `tests/test_staging_harness.py`: test `--plan` dùng mock capture thay vì ghi
+  file thật → chạy suite không làm dirty `recon/staging_plan.json`.
+- `ttm_staging_audit.py`: `--plan` mặc định **chỉ in ra stdout**; thêm
+  `--write-plan` khi muốn refresh evidence artifact. Thêm 1 unit test cho hành
+  vi không ghi file → suite **56/56**.
 
 **Không sửa:** `ttm_recon.py`, `ttm_grab.py`, `ttm_passive_check.py`,
 `ttm_control_audit.py`, `ttm_entitlement_audit.py`, `audit_classify.py`, `NEXT_AUDIT.md`,
@@ -59,8 +66,9 @@ toàn bộ `recon/*` cũ, toàn bộ `download/*`, `tests/test_audit_offline.py`
 | 10 | `python -m unittest discover -s tests -v` (lần 1) | **1** | 8 errors: mock `stub_harness` đọc env thật → `KeyError: TTM_COOKIE_A` |
 | 11 | `python -m unittest discover -s tests -v` (lần 2) | **1** | 3 fail + 1 error: body fixture 151 < ngưỡng 200; fallback mock trả nhầm; `ws5` dùng sai key `status_code`; assertion note quá chặt |
 | 12 | `python -m unittest discover -s tests -v` (lần 3) | **0** | `Ran 55 tests … OK` |
+| 12b | Sau khi sửa side-effect (lần 4, có thêm 1 test) | **0** | `Ran 56 tests … OK` |
 | 13 | `python -m unittest tests.test_audit_offline` | 0 | `Ran 37 tests … OK` |
-| 14 | `python -m unittest tests.test_staging_harness` | 0 | `Ran 18 tests … OK` |
+| 14 | `python -m unittest tests.test_staging_harness` | 0 | `Ran 18 tests … OK` (sau đó 19) |
 | 15 | `python -m compileall -q ttm_staging_audit.py tests/test_staging_harness.py` | 0 | Không lỗi |
 | 16 | `git diff --check` / secret scan | 0 / 0 matches | Sạch |
 
@@ -74,12 +82,12 @@ cụm phủ định thay vì cấm từ "vulnerability".
 ### 0.4 Test results
 
 ```
-Ran 55 tests in 0.125s
+Ran 56 tests in 0.121s
 OK
 ```
 - `tests/test_audit_offline.py` **37/37** (không sửa, chạy 1 lần trong suite đầy đủ)
-- `tests/test_staging_harness.py` **18/18** — prerequisite fail-closed (8), 5
-  workstream với mock (9), plan không lộ secret (1)
+- `tests/test_staging_harness.py` **19/19** — prerequisite fail-closed (8), 5
+  workstream với mock (9), plan không lộ secret (1), plan không ghi file (1)
 
 Repo không có `pyproject.toml` / `package.json` / Makefile / CI → không có
 build/lint chính thức; dùng `compileall`. Không cài dependency mới.
