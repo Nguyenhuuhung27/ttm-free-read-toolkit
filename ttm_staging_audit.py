@@ -240,6 +240,10 @@ def ws1_session_isolation(h: Harness, cfg: dict) -> dict:
 def ws2_object_authz(h: Harness, cfg: dict) -> dict:
     """Priority 2: non-content objects, chi GET, khong enumerate ID nguoi khac."""
     paths = [
+        # Client bundle chi cho thay POST @27459; query key "reading-history-home"
+        # @27656 ngam dinh co GET list o bundle khac (chua capture). Probe GET de
+        # kiem tra object-level authz ma khong mutate.
+        ("/api/reading-history", "reading-history"),
         ("/api/favorites", "favorites"),
         ("/api/notifications", "notifications"),
         (f"/api/listening-history?chapterId={cfg['chapter_id']}", "listening-history"),
@@ -249,16 +253,22 @@ def ws2_object_authz(h: Harness, cfg: dict) -> dict:
     summary = {}
     for path, name in paths:
         recs = {w: h.get(w, path, tag=f"ws2/{name}") for w in ("A", "B", "anon")}
-        # B khong duoc nhan cung body voi Aneu A co du lieu rieng.
+        # Chi co y nghia khi A that su co du lieu rieng (khac anon). Hash giong
+        # nhau giua A/B/B-va-anon (ca 2 deu rong) KHONG phai bang chung IDOR.
         a_bytes, b_bytes = recs["A"]["bytes"], recs["B"]["bytes"]
         a_hash, b_hash = recs["A"]["body_sha256"], recs["B"]["body_sha256"]
+        anon_hash = recs["anon"]["body_sha256"]
+        a_has_own_data = a_hash != anon_hash
+        b_got_a_data = b_hash == a_hash and a_has_own_data
         summary[name] = {
             "rows": recs, "a_bytes": a_bytes, "b_bytes": b_bytes,
-            "a_equals_anon": a_hash == recs["anon"]["body_sha256"],
+            "a_equals_anon": not a_has_own_data,
             "b_equals_a": b_hash == a_hash,
-            "needs_review": a_bytes != b_bytes and b_hash == a_hash,
-            "status": "OBSERVED_NO_CROSS_SESSION_DATA" if b_hash != a_hash else
-                      "OBSERVED_SAME_BODY_NEEDS_OWNERSHIP_CHECK",
+            "a_has_session_specific_data": a_has_own_data,
+            "needs_review": b_got_a_data,
+            "status": ("OBSERVED_NEEDS_REVIEW" if b_got_a_data else
+                       "OBSERVED_NO_CROSS_SESSION_DATA" if a_has_own_data else
+                       "UNKNOWN_NO_SESSION_SPECIFIC_DATA"),
         }
     return {"objects": summary, "status": UNKNOWN,
             "note": "Thieu test records do A/B tao -> hash giong nhau co the la ca 2 deu rong. "
@@ -360,8 +370,9 @@ def plan_text(pr: dict) -> str:
         "",
         "  5 workstreams (chi GET neu khong co --allow-mutate):",
         "   WS1  A/B/anon tren /doc/<test-chapter>.html — entitlement & body hash",
-        "   WS2  /api/favorites, /api/notifications, /api/listening-history,",
-        "        /api/chapters/<test-id>/comments, /api/user/audio-remaining",
+        "   WS2  /api/reading-history, /api/favorites, /api/notifications,",
+        "        /api/listening-history, /api/chapters/<test-id>/comments,",
+        "        /api/user/audio-remaining",
         "   WS3  A -> B -> A_again -> anon tren cung URL + Age/ETag/cf-cache-status",
         "   WS4  /nghe/<test-chapter>.html + /api/user/audio-remaining",
         "   WS5  9 dot-suffix probes + sitemap/config fingerprint",

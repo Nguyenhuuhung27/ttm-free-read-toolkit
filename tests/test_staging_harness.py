@@ -163,7 +163,7 @@ class TestWorkstreamsWithMocks(unittest.TestCase):
             ("/api/favorites" if False else "x", "x"): free,
         }
         for w in ("A", "B", "anon"):
-            for p in ("/api/favorites", "/api/notifications",
+            for p in ("/api/reading-history", "/api/favorites", "/api/notifications",
                       "/api/listening-history",
                       "/api/user/audio-remaining", "/sitemap.xml", "/api/config"):
                 self.mapping[(w, p)] = FakeResponse(EMPTY_JSON, headers={
@@ -201,11 +201,42 @@ class TestWorkstreamsWithMocks(unittest.TestCase):
         with mock.patch.object(sa, "DELAY", 0):
             out = sa.ws2_object_authz(self._h(), self.cfg)
         self.assertEqual(out["status"], sa.UNKNOWN)
+        self.assertIn("reading-history", out["objects"])
         self.assertIn("favorites", out["objects"])
         self.assertIn("listening-history", out["objects"])
         self.assertIn("comments", out["objects"])
+        self.assertIn("audio-remaining", out["objects"])
+        self.assertEqual(len(out["objects"]), 6)
         for name, rec in out["objects"].items():
             self.assertFalse(rec["needs_review"])
+            self.assertEqual(set(rec["rows"]), {"A", "B", "anon"})
+
+    def test_ws2_flags_cross_session_data_for_reading_history(self):
+        """A co du lieu rieng, B nhan dung body cua A -> can review (khong phai
+        ket luan vuln). Chi ap dung cho object co session-specific data."""
+        m = dict(self.mapping)
+        a_body = b'{"readingHistory":[{"storyId":"01SYNTHETIC","chapterNumber":1}]}'
+        for w in ("A", "B"):
+            m[(w, "/api/reading-history")] = FakeResponse(
+                a_body, headers={"Content-Type": "application/json"})
+        with mock.patch.object(sa, "DELAY", 0):
+            out = sa.ws2_object_authz(stub_harness(m), self.cfg)
+        rec = out["objects"]["reading-history"]
+        self.assertTrue(rec["a_has_session_specific_data"])
+        self.assertTrue(rec["b_equals_a"])
+        self.assertTrue(rec["needs_review"])
+        self.assertEqual(rec["status"], "OBSERVED_NEEDS_REVIEW")
+        # Van khong ket luan IDOR ở muc tong the.
+        self.assertEqual(out["status"], sa.UNKNOWN)
+
+    def test_ws2_identical_empty_records_are_not_flagged(self):
+        """A/B/anon cung rong -> hash giong nhau KHONG duoc coi la bang chung."""
+        with mock.patch.object(sa, "DELAY", 0):
+            out = sa.ws2_object_authz(self._h(), self.cfg)
+        rec = out["objects"]["reading-history"]
+        self.assertFalse(rec["a_has_session_specific_data"])
+        self.assertFalse(rec["needs_review"])
+        self.assertEqual(rec["status"], "UNKNOWN_NO_SESSION_SPECIFIC_DATA")
 
     def test_ws3_classifier_unknown_when_a_not_entitled(self):
         m = dict(self.mapping)

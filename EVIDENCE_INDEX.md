@@ -70,10 +70,10 @@ trong `NEXT_AUDIT.md` §2 đều là **Inferred**, không phải xác nhận t�
 
 | File | Chứng minh | KHÔNG chứng minh |
 |---|---|---|
-| `ttm_staging_audit.py` | Harness fail-closed cho đúng 5 ưu tiên; từ chối production host; từ chối thiếu env/cookie trùng; mặc định chỉ GET; không log secret | Không chứng minh lỗ hổng nào; **chưa từng chạy `--run` thành công** |
-| `tests/test_staging_harness.py` | 18 unit test mock: prerequisite gating (8), 5 workstream (9), plan không lộ secret (1). Bao gồm cả kịch bản leak synthetic để chứng minh classifier bắt được | Không phải bằng chứng runtime; response là synthetic/mock |
+| `ttm_staging_audit.py` | Harness fail-closed cho đúng 5 ưu tiên; từ chối production host; từ chối thiếu env/cookie trùng; mặc định chỉ GET; không log secret. WS2 phủ **6 endpoint** (thêm `/api/reading-history`); cờ `needs_review` chỉ bật khi A có dữ liệu session-specific **và** B nhận đúng body A | Không chứng minh lỗ hổng nào; **chưa từng chạy `--run` thành công** |
+| `tests/test_staging_harness.py` | 21 unit test mock: prerequisite gating (8), 5 workstream (11), plan không lộ secret (2). Bao gồm kịch bản leak synthetic để chứng minh classifier bắt được, và 2 test chống tái phát lỗi logic WS2 (xem `FINDINGS.md` §14.6) | Không phải bằng chứng runtime; response là synthetic/mock |
 | `recon/staging_plan.json` | **Bằng chứng trạng thái**: `ready=false`, `missing=7`, `sessions_fp={}`, `scope_ref=''`. Ghi lại chính xác prerequisite còn thiếu | Không chứa cookie/token (chỉ độ dài env); không phải output runtime |
-| `FINDINGS.md` §14 | Source-level analysis 4 nhóm object + audio + matcher với `@byte offset`; bảng 5 finding đều `Unknown` | Không có exact server source line (repo không có source server) |
+| `FINDINGS.md` §14 | Source-level analysis 4 nhóm object + audio + matcher với `@byte offset`; bảng 5 finding đều `Unknown`; §14.6 ghi 2 khiếm khuyết của harness đã sửa | Không có exact server source line (repo không có source server) |
 
 **Lưu ý:** `recon/staging_audit.json` (output của `--run`) **chưa tồn tại** — đó là
 file sẽ xuất hiện khi có staging + 2 tài khoản được ủy quyền. Đừng nhầm

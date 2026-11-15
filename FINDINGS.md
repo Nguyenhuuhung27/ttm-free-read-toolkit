@@ -291,7 +291,7 @@ Không có source server trong repo, nên đây là **Observed (client) / Inferr
 
 | Object / chức năng | Call site thật trong bundle | Method & payload | Quyền sở hữu |
 |---|---|---|---|
-| Reading history | `recon/page-2936fb800ce950f1.js` `@27452` | `POST /api/reading-history`, `credentials:"include"`, body `{storyId,chapterId}` | **Chỉ thấy POST**; chưa có bằng chứng GET liệt kê. Route dùng session cookie, không nhận `userId` |
+| Reading history | `recon/page-2936fb800ce950f1.js` `@27459` | `POST /api/reading-history`, `credentials:"include"`, body `{storyId,chapterId}` | Client bundle chỉ bắt được call site **POST**. Query key `reading-history-home` tại `@27656` cho thấy có một consumer **GET list** trong bundle khác (chưa capture) → WS2 probe `GET /api/reading-history` để kiểm tra object-level authz mà không mutate. Route dùng session cookie, không nhận `userId` |
 | Comments | `@12717` (GET), `@12907` (POST) | `GET /api/chapters/<id>/comments` → `{comments:[]}`; `POST` body `{content}` → `id` | ID là `chapterId` (object chương, không phải user ID); POST gắn session |
 | Listening history | `recon/nghe_page.js` `@5047` | `GET /api/listening-history?chapterId=<id>` → `{positionSeconds}` | Tham số `chapterId`, **không** có `userId` trên query |
 | Favorites / Notifications | Không có call site trong bundle đã capture; endpoint quan sát được qua `recon/control_audit.json` → `sections.config`, `recon/entitlement_sweep.json` | `GET` → `{"favorites":[]}` / `{"notifications":[]}` | Không có object ID do client truyền → **Inferred** là session-scoped |
@@ -313,7 +313,7 @@ IDOR từ việc ID có thể đoán được hay từ response 200.
 | WS | Ưu tiên | Nội dung |
 |---|---|---|
 | WS1 | A/B session isolation | A/B/anon trên `/doc/<test>.html`, parse `locked`/`content` từ RSC props, so sánh hash. `A_entitled` phải `true` mới có ý nghĩa |
-| WS2 | Object-level authz | `favorites`, `notifications`, `listening-history`, `comments`, `audio-remaining` — chỉ GET, không enumerate ID |
+| WS2 | Object-level authz | **6 endpoint**: `reading-history`, `favorites`, `notifications`, `listening-history`, `comments`, `audio-remaining` — chỉ GET, không enumerate ID. Cờ `needs_review` chỉ bật khi A có dữ liệu session-specific (khác anon) **và** B nhận đúng body của A |
 | WS3 | Cache isolation | A → B → A_again → anon trên **cùng URL** + `Age`/`ETag`/`cf-cache-status`; đưa qua `cache_isolation_state()` |
 | WS4 | Audio entitlement | So sánh sự có mặt `audioUrl` giữa A/B/anon + `/api/user/audio-remaining`; **không lưu URL, không tải audio** |
 | WS5 | Middleware matcher | 9 dot-suffix probe + fingerprint `sitemap.xml` / `api/config` để gắn đúng build |
@@ -332,7 +332,7 @@ Bảo vệ bắt buộc (đã unit-test):
 | ID | Tiêu đề | Severity | Trạng thái | Evidence |
 |---|---|---|---|---|
 | F-14.1 | A/B session & entitlement isolation | n/a | **Unknown — not verified at runtime**. WS1/WS3 sẵn sàng, chưa có phiên thật | `ttm_staging_audit.py`, `tests/test_staging_harness.py`, `recon/staging_plan.json` |
-| F-14.2 | Object-level authorization (4 nhóm) | n/a | **Unknown**. Source-level: không thấy `userId`/`owner` param; chưa có test records do A/B tạo | §14.2, WS2 |
+| F-14.2 | Object-level authorization (4 nhóm ưu tiên / 6 endpoint) | n/a | **Unknown**. Source-level: không thấy `userId`/`owner` param; chưa có test records do A/B tạo | §14.2, WS2 |
 | F-14.3 | Cache isolation giữa phiên | n/a | **Unknown**. Header lead (`Vary` thiếu `Cookie`) vẫn là review lead, không phải finding | `NEXT_AUDIT.md` §4, WS3 |
 | F-14.4 | Audio entitlement consistency | n/a | **Unknown** cho VIP; Observed (anonymous) rằng không có `audioUrl` | WS4, `FINDINGS.md` §8 |
 | F-14.5 | Middleware matcher trên build hiện tại | Informational | **Chưa re-verify** (không gọi production). WS5 đã chuẩn bị kèm fingerprint; H1 trên build 2026-11-14 vẫn là Observed, không nâng severity | WS5, `CONTROL_AUDIT.md` §1 |
@@ -350,3 +350,22 @@ header thiếu, hay middleware bypass. Mọi "Observed" mới trong đợt này 
 - [x] Cập nhật `FINDINGS.md` / `EVIDENCE_INDEX.md` / `HANDOFF.md`
 - [x] Chạy toàn bộ test, ghi exit code thật
 - [ ] Runtime A/B trên staging — **chặn bởi prerequisite**, xem `HANDOFF.md` §5
+
+### 14.6 Sửa khiếm khuyết trong chính harness (vòng 20:0x, không gọi network)
+
+Hai lỗi trong logic sinh evidence của `ttm_staging_audit.py` — **đây là lỗi công cụ
+đo lường, không phải lỗ hổng của ứng dụng**. Cả hai đều có test chống tái phát.
+
+| # | Vấn đề | Hệ quả nếu không sửa | Cách sửa |
+|---|---|---|---|
+| H-1 | WS2 **không probe `/api/reading-history`** dù ưu tiên 2 nêu rõ "reading history" (client chỉ lộ call site POST `@27459`, GET list nằm ở bundle chưa capture) | Object đầu tiên trong ưu tiên 2 không được kiểm tra → báo cáo thiếu phạm vi | Thêm `GET /api/reading-history` vào WS2 (GET-only, không mutate). Ưu tiên 2 giờ phủ **6 endpoint** thay vì 5 |
+| H-2 | Cờ `needs_review` viết sai: `a_bytes != b_bytes and b_hash == a_hash` — hai điều kiện **loại trừ nhau** (hash bằng nhau ⇒ byte bằng nhau), nên cờ **không bao giờ bật** | Cross-session data leak thật sẽ **không** được gắn cờ review; âm thầm bỏ sót | Tách thành `a_has_session_specific_data` (A khác anon) và `b_got_a_data` (B nhận đúng body A). `needs_review` chỉ bật khi **cả hai** đúng. A/B/anon cùng rồng ⇒ `UNKNOWN_NO_SESSION_SPECIFIC_DATA`, không gắn cờ |
+
+**Không thay đổi kết luận nào:** vẫn **0 confirmed vulnerability**. Hai sửa đổi này chỉ làm
+harness **nhạy hơn** — mọi verdict mới vẫn là *review lead*, không phải kết luận IDOR,
+vẫn phải qua `audit_classify` và vẫn yêu cầu A có entitlement thật.
+
+**Test mới (2):** `test_ws2_flags_cross_session_data_for_reading_history` (A có dữ
+liệu riêng, B nhận cùng body A → `needs_review=True`) và
+`test_ws2_identical_empty_records_are_not_flagged` (cả hai rỗng → không gắn cờ).
+Suite: **58/58 OK** (exit 0), trước đợt này 56/56.

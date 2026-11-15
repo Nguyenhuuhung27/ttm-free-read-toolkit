@@ -23,15 +23,15 @@
 | `TEST_CHAPTER_ID` / `TEST_CHAPTER_SLUG` / `TTM_TEST_SLUG` | đều độ dài 0 |
 | File cấu hình deployment trong repo | **0** (`.env*`, `next.config*`, `middleware*`, `vercel.json`, `wrangler*`, `docker-compose*`) |
 | Confirmed vulnerabilities | **0** |
-| 5 ưu tiên | **not verified at runtime**; đã có harness + 18 unit test mock |
-| Test suite | **56/56 OK** (37 cũ + 19 mới), exit 0 |
+| 5 ưu tiên | **not verified at runtime**; đã có harness + 21 unit test mock |
+| Test suite | **58/58 OK** (37 cũ + 21 mới), exit 0 |
 
 ### 0.2 Files đợt này
 
 | File | Loại | Mục đích |
 |---|---|---|
-| `ttm_staging_audit.py` | mới | Harness fail-closed cho 5 ưu tiên: WS1 A/B isolation, WS2 object authz, WS3 cache isolation, WS4 audio entitlement, WS5 matcher + fingerprint |
-| `tests/test_staging_harness.py` | mới | 18 unit test mock (gating 8, workstream 9, plan 1) |
+| `ttm_staging_audit.py` | mới | Harness fail-closed cho 5 ưu tiên: WS1 A/B isolation, WS2 object authz (**6 endpoint**), WS3 cache isolation, WS4 audio entitlement, WS5 matcher + fingerprint |
+| `tests/test_staging_harness.py` | mới | 21 unit test mock (gating 8, workstream 11, plan 2) |
 | `recon/staging_plan.json` | mới | Bằng chứng trạng thái: `ready=false`, `missing=7`, không chứa secret |
 | `FINDINGS.md` | sửa §14 | Source-level analysis + 5 finding đều `Unknown`, không tạo claim trùng |
 | `EVIDENCE_INDEX.md` | sửa | Thêm mục 4b, phân biệt `staging_plan.json` với `staging_audit.json` (chưa tồn tại) |
@@ -43,6 +43,16 @@
 - `ttm_staging_audit.py`: `--plan` mặc định **chỉ in ra stdout**; thêm
   `--write-plan` khi muốn refresh evidence artifact. Thêm 1 unit test cho hành
   vi không ghi file → suite **56/56**.
+
+**Sửa khiếm khuyết harness vòng 20:0x (không gọi network, xem `FINDINGS.md` §14.6):**
+- `ttm_staging_audit.py` WS2: thêm `GET /api/reading-history` (ưu tiên 2 nêu rõ
+  "reading history" nhưng WS2 bỏ sót; client chỉ lộ call site POST `@27459`,
+  GET list nằm ở bundle chưa capture). WS2 giờ phủ **6 endpoint**.
+- `ttm_staging_audit.py` WS2: sửa cờ `needs_review` vốn viết
+  `a_bytes != b_bytes and b_hash == a_hash` — hai điều kiện loại trừ nhau nên
+  cờ **không bao giờ bật**. Nay tách `a_has_session_specific_data` (A khác anon)
+  và `b_got_a_data` (B nhận đúng body A); cờ chỉ bật khi cả hai đúng.
+- +2 unit test chống tái phát → suite **58/58**.
 
 **Không sửa:** `ttm_recon.py`, `ttm_grab.py`, `ttm_passive_check.py`,
 `ttm_control_audit.py`, `ttm_entitlement_audit.py`, `audit_classify.py`, `NEXT_AUDIT.md`,
@@ -67,8 +77,9 @@ toàn bộ `recon/*` cũ, toàn bộ `download/*`, `tests/test_audit_offline.py`
 | 11 | `python -m unittest discover -s tests -v` (lần 2) | **1** | 3 fail + 1 error: body fixture 151 < ngưỡng 200; fallback mock trả nhầm; `ws5` dùng sai key `status_code`; assertion note quá chặt |
 | 12 | `python -m unittest discover -s tests -v` (lần 3) | **0** | `Ran 55 tests … OK` |
 | 12b | Sau khi sửa side-effect (lần 4, có thêm 1 test) | **0** | `Ran 56 tests … OK` |
+| 12c | Vòng 20:0x: bổ sung WS2 reading-history + sửa cờ `needs_review` (+2 test) | **0** | `Ran 58 tests … OK` |
 | 13 | `python -m unittest tests.test_audit_offline` | 0 | `Ran 37 tests … OK` |
-| 14 | `python -m unittest tests.test_staging_harness` | 0 | `Ran 18 tests … OK` (sau đó 19) |
+| 14 | `python -m unittest tests.test_staging_harness` | 0 | `Ran 21 tests … OK` (trước: 19) |
 | 15 | `python -m compileall -q ttm_staging_audit.py tests/test_staging_harness.py` | 0 | Không lỗi |
 | 16 | `git diff --check` / secret scan | 0 / 0 matches | Sạch |
 
@@ -82,12 +93,13 @@ cụm phủ định thay vì cấm từ "vulnerability".
 ### 0.4 Test results
 
 ```
-Ran 56 tests in 0.121s
+Ran 58 tests in 0.135s
 OK
 ```
 - `tests/test_audit_offline.py` **37/37** (không sửa, chạy 1 lần trong suite đầy đủ)
-- `tests/test_staging_harness.py` **19/19** — prerequisite fail-closed (8), 5
-  workstream với mock (9), plan không lộ secret (1), plan không ghi file (1)
+- `tests/test_staging_harness.py` **21/21** — prerequisite fail-closed (8), 5
+  workstream với mock (11), plan không lộ secret (1), plan không ghi file (1),
+  chống tái phát lỗi WS2 (2)
 
 Repo không có `pyproject.toml` / `package.json` / Makefile / CI → không có
 build/lint chính thức; dùng `compileall`. Không cài dependency mới.
