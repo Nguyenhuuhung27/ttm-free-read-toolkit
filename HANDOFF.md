@@ -1,13 +1,151 @@
 # HANDOFF — trạng thái bàn giao
 
-**Thời điểm:** 2026-11-15 ~18:5x GMT+7
+**Cập nhật lần cuối:** 2026-11-15 ~19:3x GMT+7
 **Repo:** https://github.com/Nguyenhuuhung27/ttm-free-read-toolkit (public)
-**Branch:** `main` | **Commit khi bắt đầu:** `2415a88`
-**Nhiệm vụ:** `D:\Downloads\ttm_free_read_toolkit_next_audit.md`
+**Branch:** `main` | **Commit khi bắt đầu đợt này:** `93ebbd1`
+**Nhiệm vụ hiện tại:** 5 ưu tiên A/B session/object/cache/audio/matcher
+**Nhiệm vụ trước:** `D:\Downloads\ttm_free_read_toolkit_next_audit.md`
+
+> ⚠️ **Mục 0 là trạng thái HIỆN TẠI.** Mục 1–7 bên dưới là handoff của đợt
+> 18:5x (vẫn còn giá trị lịch sử, một vài con số đã cũ — được ghi chú rõ).
 
 ---
 
-## 1. Trạng thái hiện tại (exact)
+## 0. Trạng thái hiện tại (đợt 19:3x)
+
+### 0.1 Dữ kiện
+
+| Mục | Giá trị |
+|---|---|
+| Network calls tới ứng dụng | **0** (không gọi production, không có staging) |
+| `TTM_STAGING_URL` / `TTM_BASE_URL` / `STAGING_URL` / `BASE_URL` | đều độ dài 0 |
+| `TTM_COOKIE` / `TTM_COOKIE_A` / `TTM_COOKIE_B` | đều độ dài 0 |
+| `TEST_CHAPTER_ID` / `TEST_CHAPTER_SLUG` / `TTM_TEST_SLUG` | đều độ dài 0 |
+| File cấu hình deployment trong repo | **0** (`.env*`, `next.config*`, `middleware*`, `vercel.json`, `wrangler*`, `docker-compose*`) |
+| Confirmed vulnerabilities | **0** |
+| 5 ưu tiên | **not verified at runtime**; đã có harness + 18 unit test mock |
+| Test suite | **55/55 OK** (37 cũ + 18 mới), exit 0 |
+
+### 0.2 Files đợt này
+
+| File | Loại | Mục đích |
+|---|---|---|
+| `ttm_staging_audit.py` | mới | Harness fail-closed cho 5 ưu tiên: WS1 A/B isolation, WS2 object authz, WS3 cache isolation, WS4 audio entitlement, WS5 matcher + fingerprint |
+| `tests/test_staging_harness.py` | mới | 18 unit test mock (gating 8, workstream 9, plan 1) |
+| `recon/staging_plan.json` | mới | Bằng chứng trạng thái: `ready=false`, `missing=7`, không chứa secret |
+| `FINDINGS.md` | sửa §14 | Source-level analysis + 5 finding đều `Unknown`, không tạo claim trùng |
+| `EVIDENCE_INDEX.md` | sửa | Thêm mục 4b, phân biệt `staging_plan.json` với `staging_audit.json` (chưa tồn tại) |
+| `HANDOFF.md` | sửa | Thêm mục 0 này |
+
+**Không sửa:** `ttm_recon.py`, `ttm_grab.py`, `ttm_passive_check.py`,
+`ttm_control_audit.py`, `ttm_entitlement_audit.py`, `audit_classify.py`, `NEXT_AUDIT.md`,
+`CONTROL_AUDIT.md`, `ENTITLEMENT_AUDIT.md`, `TESTPLAN.md`, `CLAUDE.md`,
+toàn bộ `recon/*` cũ, toàn bộ `download/*`, `tests/test_audit_offline.py`,
+`tests/fixtures/*`. → Không lặp offline test cũ thừa, giữ nguyên evidence.
+
+### 0.3 Commands & exit codes (đợt này)
+
+| # | Command | Exit | Kết quả |
+|---|---|---|---|
+| 1 | `git branch --show-current && git rev-parse --short HEAD && git status --short` | 0 | `main`, `93ebbd1`, sạch |
+| 2 | `${#VAR}` cho 11 biến env + `env \| grep -iE 'staging\|test_\|^TTM_\|base_url'` | 0 | Tất cả prerequisite = 0; chỉ có `WECOM_MEDIA_UPLOAD_BASE_URL` (không liên quan) |
+| 3 | `find . -maxdepth 2 -type f \( -name '*.env*' -o … \)` | 0 | 0 file cấu hình deployment |
+| 4 | `python -c "…trích /api/ call site từ 4 bundle…"` | 0 | 10 call site, có `@byte offset` |
+| 5 | `python -c "…inventory endpoint toàn recon…"` | 0 | 21 endpoint dạng literal |
+| 6 | `python -c "…đếm userId/owner/user.id…"` | 0 | `userId × 0`, `owner × 0` trong 3 bundle |
+| 7 | `python ttm_staging_audit.py --plan` | **3** | In kế hoạch, `ready=false`, **0 request** (exit 3 = chưa sẵn sàng, expected) |
+| 8 | `python ttm_staging_audit.py --run` | **3** | `PREREQUISITES NOT MET`, liệt kê 7 env thiếu, **0 request** |
+| 9 | `TTM_STAGING_URL=https://tieuthuyetmang.com … --run` | **3** | `TU CHOI: host production`, **0 request** |
+| 10 | `python -m unittest discover -s tests -v` (lần 1) | **1** | 8 errors: mock `stub_harness` đọc env thật → `KeyError: TTM_COOKIE_A` |
+| 11 | `python -m unittest discover -s tests -v` (lần 2) | **1** | 3 fail + 1 error: body fixture 151 < ngưỡng 200; fallback mock trả nhầm; `ws5` dùng sai key `status_code`; assertion note quá chặt |
+| 12 | `python -m unittest discover -s tests -v` (lần 3) | **0** | `Ran 55 tests … OK` |
+| 13 | `python -m unittest tests.test_audit_offline` | 0 | `Ran 37 tests … OK` |
+| 14 | `python -m unittest tests.test_staging_harness` | 0 | `Ran 18 tests … OK` |
+| 15 | `python -m compileall -q ttm_staging_audit.py tests/test_staging_harness.py` | 0 | Không lỗi |
+| 16 | `git diff --check` / secret scan | 0 / 0 matches | Sạch |
+
+**Các lỗi đã fix (ghi lại để không lặp):** `stub_harness` phải `mock.patch.dict`
+env giả; fixture body cần > 200 ký tự để classifier coi A là entitled (dùng
+`FREE_HTML_LONG` = fixture + padding synthetic); vòng lặp matcher probe không
+được ghi đè key `.html` của doc path; `ws5` đọc `rec["status"]` không phải
+`status_code`; note "không kết luận vulnerability" là đúng nên test kiểm tra
+cụm phủ định thay vì cấm từ "vulnerability".
+
+### 0.4 Test results
+
+```
+Ran 55 tests in 0.125s
+OK
+```
+- `tests/test_audit_offline.py` **37/37** (không sửa, chạy 1 lần trong suite đầy đủ)
+- `tests/test_staging_harness.py` **18/18** — prerequisite fail-closed (8), 5
+  workstream với mock (9), plan không lộ secret (1)
+
+Repo không có `pyproject.toml` / `package.json` / Makefile / CI → không có
+build/lint chính thức; dùng `compileall`. Không cài dependency mới.
+
+### 0.5 Runtime verification
+
+> **"not verified at runtime"** cho cả 5 ưu tiên.
+
+**0 request tới ứng dụng**. Mọi "Observed" trong `FINDINGS.md` §14 là tái đọc
+evidence/client bundle có sẵn, không phải quan sát mới. Priority 5
+("re-verify middleware matcher against current deployment") **chưa thực hiện**
+vì yêu cầu dùng staging; không gọi production để thay thế.
+
+**Prerequisite còn thiếu (đúng 4):**
+1. Staging URL được ủy quyền, host có dấu hiệu staging (harness từ chối
+   `*.tieuthuyetmang.com`), `TTM_STAGING_URL`.
+2. Hai phiên độc lập `TTM_COOKIE_A` (có entitlement) / `TTM_COOKIE_B` (không có),
+   phải **khác nhau** — không commit giá trị.
+3. Test chapter **synthetic**: `TTM_TEST_SLUG`, `TTM_TEST_CHAPTER`,
+   `TTM_TEST_CHAPTER_ID`, `TTM_TEST_STORY_ID`.
+4. `TTM_MUTATE_AUTHORIZED=1` + `--allow-mutate` nếu muốn test ownership trên
+   write path (`POST /api/reading-history`, comments, unlock). Mặc định chỉ GET.
+
+`TTM_SCOPE_REF` (mã tham chiếu ủy quyền) là optional, chỉ ghi vào evidence.
+
+### 0.6 Next verifiable step
+
+```bash
+export TTM_STAGING_URL='https://staging.example.test'   # KHONG phai production
+export TTM_COOKIE_A='<session A>'                       # KHONG commit
+export TTM_COOKIE_B='<session B>'                       # KHONG commit
+export TTM_TEST_SLUG='<synthetic-slug>'
+export TTM_TEST_CHAPTER='1'
+export TTM_TEST_CHAPTER_ID='<synthetic-chapter-id>'
+export TTM_TEST_STORY_ID='<synthetic-story-id>'
+export TTM_SCOPE_REF='<authorization-ticket>'
+
+python ttm_staging_audit.py --plan    # phai ra exit 0 (ready=true)
+python ttm_staging_audit.py --run     # -> recon/staging_audit.json
+python -m unittest discover -s tests -v
+```
+
+Đọc `recon/staging_audit.json`:
+- `ws1.A_entitled == true` mới có ý nghĩa; nếu `false` → A chưa có entitlement,
+  mọi kết luận isolation là `UNKNOWN_A_NOT_ENTITLED`.
+- `ws1.B_received_A_body` / `ws3.classifier_result` — chỉ
+  `OBSERVED_CROSS_SESSION_LEAK` mới được phép nâng thành finding.
+- `ws2.objects[*].needs_review` — cần tạo test records của A trước khi kết luận
+  IDOR (yêu cầu mutate scope).
+- `ws4.consistent_with_entitlement` — so sánh sự có mặt `audioUrl`, không lưu URL.
+- `ws5.fingerprint` — gắn kết quả matcher vào đúng build (`sitemap`/`config` hash).
+
+### 0.7 Rủi ro / lưu ý
+
+- `recon/staging_audit.json` **chưa tồn tại**; `recon/staging_plan.json` chỉ là
+  bằng chứng "chưa đủ prerequisite". Đừng nhầm hai file này.
+- Repo **public** vẫn chứa 3 file `download/…/*.md` full-text chương miễn phí
+  production — không đọc/sửa/xoá trong đợt này; chủ repo quyết định.
+- Source-level analysis dùng **byte offset** trong bundle minify, không phải
+  exact line của server source (repo không có server source).
+- `FINDINGS.md` §14.2 ghi rõ tín hiệu "không thấy `userId`/`owner` param" là
+  **ủng hộ** session-scoping, **không phải** bằng chứng server kiểm tra ownership.
+
+---
+
+## 1. Trạng thái hiện tại (exact) — *bản 18:5x, đã lỗi thời, xem mục 0*
 
 | Mục | Giá trị |
 |---|---|

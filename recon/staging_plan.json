@@ -1,0 +1,31 @@
+{
+  "at": "2026-11-15T12:51:11.279688+00:00",
+  "prerequisites": {
+    "env_lengths": {
+      "TTM_STAGING_URL": 0,
+      "TTM_COOKIE_A": 0,
+      "TTM_COOKIE_B": 0,
+      "TTM_TEST_SLUG": 0,
+      "TTM_TEST_CHAPTER": 0,
+      "TTM_TEST_CHAPTER_ID": 0,
+      "TTM_TEST_STORY_ID": 0
+    },
+    "missing": [
+      "TTM_STAGING_URL",
+      "TTM_COOKIE_A",
+      "TTM_COOKIE_B",
+      "TTM_TEST_SLUG",
+      "TTM_TEST_CHAPTER",
+      "TTM_TEST_CHAPTER_ID",
+      "TTM_TEST_STORY_ID"
+    ],
+    "staging_host_ok": false,
+    "staging_host_message": "TTM_STAGING_URL chua set",
+    "sessions_independent": false,
+    "sessions_fp": {},
+    "scope_ref": "",
+    "mutate_authorized": false,
+    "ready": false
+  },
+  "plan": "TTM STAGING A/B AUDIT — KE HOACH (khong gui request nao)\n  commit/env: prerequisites.ready=False\n  staging: TTM_STAGING_URL chua set\n  sessions independent: False\n  mutate authorized: False\n\n  5 workstreams (chi GET neu khong co --allow-mutate):\n   WS1  A/B/anon tren /doc/<test-chapter>.html — entitlement & body hash\n   WS2  /api/favorites, /api/notifications, /api/listening-history,\n        /api/chapters/<test-id>/comments, /api/user/audio-remaining\n   WS3  A -> B -> A_again -> anon tren cung URL + Age/ETag/cf-cache-status\n   WS4  /nghe/<test-chapter>.html + /api/user/audio-remaining\n   WS5  9 dot-suffix probes + sitemap/config fingerprint\n\n  Evidence: status, header whitelist, SHA-256 body, synthetic marker.\n  KHONG log cookie/token, KHONG luu body, KHONG enumerate ID.\n\n  THIEU: TTM_STAGING_URL, TTM_COOKIE_A, TTM_COOKIE_B, TTM_TEST_SLUG, TTM_TEST_CHAPTER, TTM_TEST_CHAPTER_ID, TTM_TEST_STORY_ID"
+}

@@ -66,12 +66,25 @@ trong `NEXT_AUDIT.md` §2 đều là **Inferred**, không phải xác nhận t�
 | `tests/test_audit_offline.py` | 37 test offline; khóa các invariant chống suy luận sai |
 | `audit_classify.py` | Hàm thuần `content_state` / `cache_isolation_state` / `classify` / `redact` |
 
+### 4b. Artifact đợt 2026-11-15 19:3x (5 ưu tiên A/B)
+
+| File | Chứng minh | KHÔNG chứng minh |
+|---|---|---|
+| `ttm_staging_audit.py` | Harness fail-closed cho đúng 5 ưu tiên; từ chối production host; từ chối thiếu env/cookie trùng; mặc định chỉ GET; không log secret | Không chứng minh lỗ hổng nào; **chưa từng chạy `--run` thành công** |
+| `tests/test_staging_harness.py` | 18 unit test mock: prerequisite gating (8), 5 workstream (9), plan không lộ secret (1). Bao gồm cả kịch bản leak synthetic để chứng minh classifier bắt được | Không phải bằng chứng runtime; response là synthetic/mock |
+| `recon/staging_plan.json` | **Bằng chứng trạng thái**: `ready=false`, `missing=7`, `sessions_fp={}`, `scope_ref=''`. Ghi lại chính xác prerequisite còn thiếu | Không chứa cookie/token (chỉ độ dài env); không phải output runtime |
+| `FINDINGS.md` §14 | Source-level analysis 4 nhóm object + audio + matcher với `@byte offset`; bảng 5 finding đều `Unknown` | Không có exact server source line (repo không có source server) |
+
+**Lưu ý:** `recon/staging_audit.json` (output của `--run`) **chưa tồn tại** — đó là
+file sẽ xuất hiện khi có staging + 2 tài khoản được ủy quyền. Đừng nhầm
+`staging_plan.json` với evidence runtime.
+
 ## 5. Tài liệu
 
 | File | Nội dung |
 |---|---|
-| `NEXT_AUDIT.md` | Báo cáo đợt này: scope, bản đồ kiến trúc, re-verify 6 giả thuyết, Unknown/prerequisite |
-| `FINDINGS.md` §13 | Cập nhật finding theo format chuẩn, **không tạo claim trùng** với §1–12 |
+| `NEXT_AUDIT.md` | Báo cáo đợt trước: scope, bản đồ kiến trúc, re-verify 6 giả thuyết, Unknown/prerequisite |
+| `FINDINGS.md` §13–14 | §13 re-verification; **§14 đợt 5 ưu tiên A/B** — source-level analysis + 5 finding `Unknown` |
 | `CONTROL_AUDIT.md` | Phân lớp gate/entitlement, retest F2, rà soát cấu hình (2026-11-14) |
 | `ENTITLEMENT_AUDIT.md` | 3 lớp: server authz / content delivery / cache (2026-11-14) |
 | `TESTPLAN.md` | Ma trận testcase có ủy quyền (cần 2 tài khoản) |

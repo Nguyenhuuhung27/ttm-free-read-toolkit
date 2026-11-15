@@ -260,3 +260,93 @@ thành finding.
 confirmed vulnerability.** Chi tiết command/test/environment: `NEXT_AUDIT.md` §3,
 `HANDOFF.md`.
 
+---
+
+## 14. Cập nhật 2026-11-15 19:3x — 5 ưu tiên A/B (commit `93ebbd1` → đợt này)
+
+> **Kết luận: vẫn KHÔNG có lỗ hổng authorization / data-isolation nào được
+> chứng minh.** Không có staging, không có 2 tài khoản được ủy quyền, không có
+> test chapter synthetic → **0 request tới ứng dụng** trong đợt này. Theo yêu cầu
+> "nếu thiếu prerequisite thì hoàn thành source-level analysis và chuẩn bị
+> reproducible tests", tôi đã làm cả hai và **không** truy cập nội dung production
+> được bảo vệ.
+
+### 14.1 Prerequisite — đo lại, không giả định
+
+| Biến | Độ dài | Ghi chú |
+|---|---|---|
+| `TTM_STAGING_URL`, `TTM_BASE_URL`, `STAGING_URL`, `BASE_URL` | 0 | Không có staging URL |
+| `TTM_COOKIE`, `TTM_COOKIE_A`, `TTM_COOKIE_B` | 0 | Không có phiên test |
+| `TEST_CHAPTER_ID`, `TEST_CHAPTER_SLUG`, `TTM_TEST_SLUG` | 0 | Không có chương synthetic |
+| File `.env*`, `docker-compose*`, `next.config*`, `middleware*`, `vercel.json`, `wrangler*` | 0 file | Repo không chứa cấu hình deployment |
+
+→ Cả 5 ưu tiên đều **not verified at runtime**. Không thay thế bằng test trên
+production, không giả mạo entitlement, không enumerate ID.
+
+### 14.2 Source-level analysis (từ client bundle đã capture, có byte offset)
+
+Không có source server trong repo, nên đây là **Observed (client) / Inferred
+(server)**, không phải xác nhận mã nguồn. Mỗi bundle là 1 dòng minify → dùng
+`@offset`.
+
+| Object / chức năng | Call site thật trong bundle | Method & payload | Quyền sở hữu |
+|---|---|---|---|
+| Reading history | `recon/page-2936fb800ce950f1.js` `@27452` | `POST /api/reading-history`, `credentials:"include"`, body `{storyId,chapterId}` | **Chỉ thấy POST**; chưa có bằng chứng GET liệt kê. Route dùng session cookie, không nhận `userId` |
+| Comments | `@12717` (GET), `@12907` (POST) | `GET /api/chapters/<id>/comments` → `{comments:[]}`; `POST` body `{content}` → `id` | ID là `chapterId` (object chương, không phải user ID); POST gắn session |
+| Listening history | `recon/nghe_page.js` `@5047` | `GET /api/listening-history?chapterId=<id>` → `{positionSeconds}` | Tham số `chapterId`, **không** có `userId` trên query |
+| Favorites / Notifications | Không có call site trong bundle đã capture; endpoint quan sát được qua `recon/control_audit.json` → `sections.config`, `recon/entitlement_sweep.json` | `GET` → `{"favorites":[]}` / `{"notifications":[]}` | Không có object ID do client truyền → **Inferred** là session-scoped |
+| Audio quota | `recon/layout-8430bcd733497a62.js` `@17963` | `GET /api/user/audio-remaining` → `{remaining}` | Chỉ gọi khi `useSession().user.id` tồn tại (`@17963`); không có `userId` param |
+| Audio URL | `recon/nghe_page.js` `@4257` | prop `audioUrl` do **server component** truyền vào player | Không thấy client tự dựng URL |
+| Unlock | `recon/page-2936fb800ce950f1.js` `@25224` | `POST /api/chapters/<id>/unlock`, không body | Cần mutate scope — **không chạy** |
+| Chapter-errors | `@9263`, `recon/nghe_page.js` `@21735` | `POST /api/chapter-errors`, body `{chapterId,description}` | Cần mutate scope — **không chạy** |
+
+**Đáng chú ý:** trong các bundle đã capture **không tìm thấy** `userId`, `owner`,
+`commentId` hay `user.id` dùng làm tham số request (kiểm tra 3 bundle, kết quả
+`userId × 0`, `owner × 0`). Đây là tín hiệu *ủng hộ* session-scoping, nhưng
+**chưa chứng minh** server kiểm tra ownership — cần A/B thật. Không kết luận
+IDOR từ việc ID có thể đoán được hay từ response 200.
+
+### 14.3 Reproducible tests đã chuẩn bị (chưa chạy runtime)
+
+`ttm_staging_audit.py` — harness **fail-closed** cho đúng 5 ưu tiên:
+
+| WS | Ưu tiên | Nội dung |
+|---|---|---|
+| WS1 | A/B session isolation | A/B/anon trên `/doc/<test>.html`, parse `locked`/`content` từ RSC props, so sánh hash. `A_entitled` phải `true` mới có ý nghĩa |
+| WS2 | Object-level authz | `favorites`, `notifications`, `listening-history`, `comments`, `audio-remaining` — chỉ GET, không enumerate ID |
+| WS3 | Cache isolation | A → B → A_again → anon trên **cùng URL** + `Age`/`ETag`/`cf-cache-status`; đưa qua `cache_isolation_state()` |
+| WS4 | Audio entitlement | So sánh sự có mặt `audioUrl` giữa A/B/anon + `/api/user/audio-remaining`; **không lưu URL, không tải audio** |
+| WS5 | Middleware matcher | 9 dot-suffix probe + fingerprint `sitemap.xml` / `api/config` để gắn đúng build |
+
+Bảo vệ bắt buộc (đã unit-test):
+- Từ chối mọi host production (`*.tieuthuyetmang.com`) và host không có dấu hiệu staging.
+- Từ chối nếu thiếu 1 trong 7 env, hoặc `TTM_COOKIE_A == TTM_COOKIE_B`.
+- Mặc định **chỉ GET**; `--allow-mutate` cần thêm `TTM_MUTATE_AUTHORIZED=1`.
+- Chỉ log status, header whitelist, SHA-256 body, synthetic marker — **không log
+  cookie/token, không lưu body, không enumerate ID**.
+- Mọi verdict đi qua `audit_classify` (classifier **không nhận HTTP status**).
+- `--plan` / `--run` thiếu prerequisite → exit `3`, **không gửi request nào**.
+
+### 14.4 Findings (cập nhật, không tạo claim trùng)
+
+| ID | Tiêu đề | Severity | Trạng thái | Evidence |
+|---|---|---|---|---|
+| F-14.1 | A/B session & entitlement isolation | n/a | **Unknown — not verified at runtime**. WS1/WS3 sẵn sàng, chưa có phiên thật | `ttm_staging_audit.py`, `tests/test_staging_harness.py`, `recon/staging_plan.json` |
+| F-14.2 | Object-level authorization (4 nhóm) | n/a | **Unknown**. Source-level: không thấy `userId`/`owner` param; chưa có test records do A/B tạo | §14.2, WS2 |
+| F-14.3 | Cache isolation giữa phiên | n/a | **Unknown**. Header lead (`Vary` thiếu `Cookie`) vẫn là review lead, không phải finding | `NEXT_AUDIT.md` §4, WS3 |
+| F-14.4 | Audio entitlement consistency | n/a | **Unknown** cho VIP; Observed (anonymous) rằng không có `audioUrl` | WS4, `FINDINGS.md` §8 |
+| F-14.5 | Middleware matcher trên build hiện tại | Informational | **Chưa re-verify** (không gọi production). WS5 đã chuẩn bị kèm fingerprint; H1 trên build 2026-11-14 vẫn là Observed, không nâng severity | WS5, `CONTROL_AUDIT.md` §1 |
+
+**Confirmed vulnerabilities: 0.** Không có finding nào được suy ra từ HTTP 200,
+header thiếu, hay middleware bypass. Mọi "Observed" mới trong đợt này là
+**Observed về code/evidence có sẵn**, không phải quan sát runtime mới.
+
+### 14.5 Definition of done (đợt này)
+
+- [x] Đọc `NEXT_AUDIT.md`, `HANDOFF.md`, `TESTPLAN.md`, script hiện có
+- [x] Không lặp lại 37 offline test cũ một cách thừa (chạy 1 lần trong suite đầy đủ)
+- [x] Source-level analysis 4 nhóm object + audio + matcher, có byte offset
+- [x] Harness fail-closed cho 5 ưu tiên, kèm 18 unit test mock
+- [x] Cập nhật `FINDINGS.md` / `EVIDENCE_INDEX.md` / `HANDOFF.md`
+- [x] Chạy toàn bộ test, ghi exit code thật
+- [ ] Runtime A/B trên staging — **chặn bởi prerequisite**, xem `HANDOFF.md` §5
